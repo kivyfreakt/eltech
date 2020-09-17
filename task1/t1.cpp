@@ -149,6 +149,10 @@ int main()
 
 
 char* char_array_method(clock_t* time, char* A, char* B, char* C, char* D)
+/*
+    Реализация задания при помощи структуры массива символов.
+    Сложность алгоритма O(n^2)
+*/
 {
 
     char* E = new char[U+1];
@@ -193,6 +197,10 @@ char* char_array_method(clock_t* time, char* A, char* B, char* C, char* D)
 }
 
 List* list_method(clock_t* time, List* A, List* B, List* C, List* D)
+/*
+    Реализация задания при помощи структуры линейного односвязного списка.
+    Сложность алгоритма O(n^2)
+*/
 {
 
     // Нормально ли это, что это самый неэффективный по времени метод?))
@@ -241,6 +249,10 @@ List* list_method(clock_t* time, List* A, List* B, List* C, List* D)
 }
 
 bool* bool_method(clock_t* time, bool* A, bool* B, bool* C, bool* D)
+/*
+    Реализация задания при помощи битовой цепочки.
+    Сложность алгоритма O(1) (или O(|U|), если |U| - параметр)
+*/
 {
     bool* result;
     int rolls = ROLLS;
@@ -263,6 +275,10 @@ bool* bool_method(clock_t* time, bool* A, bool* B, bool* C, bool* D)
 
 
 unsigned int word_method(clock_t* time, unsigned int A, unsigned int B, unsigned int C, unsigned int D)
+/*
+    Реализация задания при помощи битовой цепочки.
+    Сложность алгоритма O(1)
+*/
 {
     unsigned int result;
     int rolls = ROLLS;
@@ -363,7 +379,6 @@ bool* to_bool(unsigned int num)
 void print_table(double time1, double time2, double time3, double time4)
 /*
     Вывод таблицы на экран
-    @param timek - время k-того вида реализации
 */
 {
     // СДЕЛАТЬ НОРМАЛЬНУЮ ТАБЛИЦУ, ЧЕ ЭТО ЗА ПИЗДЕЦ ?!
