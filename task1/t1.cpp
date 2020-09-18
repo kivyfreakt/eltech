@@ -19,8 +19,7 @@ using namespace std;
 // ----- Константы -----
 
 const int U = 26; // мощность универсума
-const int ROLLS = 1000000; // количество повторений теста
-
+const int ROLLS = 2; // количество повторений теста
 
 // ----- Структуры -----
 
@@ -62,7 +61,24 @@ int main()
     clock_t clock;
     double time1, time2, time3, time4;
 
-    char A[U+1], B[U+1], C[U+1], D[U+1];
+    char* A = nullptr;
+    char* B = nullptr;
+    char* C = nullptr;
+    char* D = nullptr;
+    char* R = nullptr;
+
+    List* lA = nullptr;
+    List* lB = nullptr;
+    List* lC = nullptr;
+    List* lD = nullptr;
+    List* lR = nullptr;
+
+    bool* bA = nullptr;
+    bool* bB = nullptr;
+    bool* bC = nullptr;
+    bool* bD = nullptr;
+    bool* bR = nullptr;
+
     unsigned int wA, wB, wC, wD, wR;
 
     cout << "0) Подготовленный тест \n1) Ввод данных \n2) Генерация данных \n" << ">" << endl;
@@ -70,25 +86,19 @@ int main()
 
     switch (menu)
     {
-
-        case 1: // ввод данных
-            // Считываем строки, т.к самый удобный способ
-            cout << "Введите множества: \n";
-            cout << "A = "; cin >> A;
-            cout << "B = "; cin >> B;
-            cout << "C = "; cin >> C;
-            cout << "D = "; cin >> D;
-
-            // конверитируем в машинные слова
-            wA = to_word(A);
-            wB = to_word(B);
-            wC = to_word(C);
-            wD = to_word(D);
-
-        break;
+        // case 1: // ввод данных
+        //     // Считываем строки, т.к самый удобный способ
+        //
+        //     // // конверитируем в машинные слова
+        //     // wA = to_word(A);
+        //     // wB = to_word(B);
+        //     // wC = to_word(C);
+        //     // wD = to_word(D);
+        //
+        // break;
 
         case 2: // генерация данных
-            // Генерируем машинные слова, т.к это проще всего)
+            // Генерируем машинные слова, т.к это проще всего
             srand(time(nullptr));
             wA = rand();
             wB = rand();
@@ -112,34 +122,73 @@ int main()
     }
 
     // Основная функция
-
+    A = to_array(wA);
+    B = to_array(wB);
+    C = to_array(wC);
+    D = to_array(wD);
     cout << "Данные: \n";
-    cout << "A = " << to_array(wA) << " " << wA << endl;
-    cout << "B = " << to_array(wB) << " " << wB << endl;
-    cout << "C = " << to_array(wC) << " " << wC << endl;
-    cout << "D = " << to_array(wD) << " " << wD << endl;
-
-    cout << "\nРезультат: \n";
-
-    // Массив символов
-    char* R = char_array_method(&clock, to_array(wA), to_array(wB), to_array(wC), to_array(wD));
-    time1 = 1000*((((double)clock)/CLOCKS_PER_SEC)/ROLLS);
-    cout << R << endl;
+    cout << "A = " << A << endl;
+    cout << "B = " << B << endl;
+    cout << "C = " << C << endl;
+    cout << "D = " << D << endl;
 
     // Список
-    List* lR = list_method(&clock, to_list(wA), to_list(wB), to_list(wC), to_list(wD));
+
+    lA =  to_list(wA);
+    lB =  to_list(wB);
+    lC =  to_list(wC);
+    lD =  to_list(wD);
+
+    lR = list_method(&clock, lA, lB, lC, lD);
     time2 = 1000*((((double)clock)/CLOCKS_PER_SEC)/ROLLS);
-    cout << to_array(lR) << endl;
+
+    delete lA;
+    delete lB;
+    delete lC;
+    delete lD;
 
     // Битовая цепочка
-    bool* bR = bool_method(&clock, to_bool(wA), to_bool(wB), to_bool(wC), to_bool(wD));
+    bA = to_bool(wA);
+    bB = to_bool(wB);
+    bC = to_bool(wC);
+    bD = to_bool(wD);
+
+    bR = bool_method(&clock, bA, bB, bC, bD);
     time3 = 1000*((((double)clock)/CLOCKS_PER_SEC)/ROLLS);
-    cout << to_array(bR) << endl;
+
+    delete bA;
+    delete bB;
+    delete bC;
+    delete bD;
 
     // Машинное слово
     wR = word_method(&clock, wA, wB, wC, wD);
     time4 = 1000*((((double)clock)/CLOCKS_PER_SEC)/ROLLS);
-    cout <<  to_array(wR) << endl;
+
+    // Массив символов
+    R = char_array_method(&clock, A, B, C, D);
+    time1 = 1000*((((double)clock)/CLOCKS_PER_SEC)/ROLLS);
+
+    delete A;
+    delete B;
+    delete C;
+    delete D;
+
+    cout << "\nРезультат: \n";
+    cout << "Результат при использовании массива символов: " << R << endl;
+    delete R;
+    R = to_array(lR);
+    cout << "Результат при использовании списка: " << R << endl;
+    delete R;
+    R = to_array(bR);
+    cout << "Результат при использовании массива битов: " << R << endl;
+    delete R;
+    R = to_array(wR);
+    cout << "Результат при использовании машинного слова: " << R << endl;
+
+    delete R;
+    delete bR;
+    delete lR;
 
     print_table(time1, time2, time3, time4);
 
@@ -165,10 +214,9 @@ char* char_array_method(clock_t* time, char* A, char* B, char* C, char* D)
 
     for(;rolls > 0; rolls--)
     {
-        // ПОДУМАЙ, МОЖНО ЛИ ОПТИМИЗИРОВАТЬ?
-        // хотя и так сложность квадрат, хуле ты еще хочешь, мудила
-
         // вычисление E = (B&C&D). Сложность - O(n^2)
+
+
         for (i = 0, k = 0; B[i]; ++i)
             for(j = 0; C[j]; ++j)
                 if (B[i] == C[j])
@@ -190,7 +238,10 @@ char* char_array_method(clock_t* time, char* A, char* B, char* C, char* D)
         R[k] = '\0';
     }
 
+
     stop = clock();
+
+    delete E;
 
     *time = stop-start;
     return R;
@@ -202,10 +253,6 @@ List* list_method(clock_t* time, List* A, List* B, List* C, List* D)
     Сложность алгоритма O(n^2)
 */
 {
-
-    // Нормально ли это, что это самый неэффективный по времени метод?))
-    // Наверное, да) Или нет. Надо подумать потом.
-
     List* E = nullptr;
     List* R = nullptr;
     int rolls = ROLLS;
@@ -216,10 +263,9 @@ List* list_method(clock_t* time, List* A, List* B, List* C, List* D)
 
     for(;rolls > 0; rolls--)
     {
-        // ПОДУМАЙ, МОЖНО ЛИ ОПТИМИЗИРОВАТЬ?
-        // хотя и так сложность квадрат, хуле ты еще хочешь, мудила
-
         // вычисление E = (B&C&D). Сложность - O(n^2)
+
+        delete E;
         E = nullptr;
         for (auto x = B; x; x = x->next)
             for(auto y = C; y; y = y->next)
@@ -230,6 +276,7 @@ List* list_method(clock_t* time, List* A, List* B, List* C, List* D)
 
 
         // Вычисление R = A / E. Сложность - O(n^2)
+        delete R;
         R = nullptr;
         for (auto x = A; x; x = x->next)
         {
@@ -244,6 +291,8 @@ List* list_method(clock_t* time, List* A, List* B, List* C, List* D)
 
     stop = clock();
 
+    delete E;
+
     *time = stop-start;
     return R;
 }
@@ -251,7 +300,7 @@ List* list_method(clock_t* time, List* A, List* B, List* C, List* D)
 bool* bool_method(clock_t* time, bool* A, bool* B, bool* C, bool* D)
 /*
     Реализация задания при помощи битовой цепочки.
-    Сложность алгоритма O(1) (или O(|U|), если |U| - параметр)
+    Сложность алгоритма O(1)
 */
 {
     bool* result;
@@ -381,15 +430,10 @@ void print_table(double time1, double time2, double time3, double time4)
     Вывод таблицы на экран
 */
 {
-    // СДЕЛАТЬ НОРМАЛЬНУЮ ТАБЛИЦУ, ЧЕ ЭТО ЗА ПИЗДЕЦ ?!
-
-    // Шапка таблицы
     cout << "\n\nCравнение методов реализации \nКоличество повторов теста: " << ROLLS << "\n\n";
 
     cout << "Массив символов (сложность алгоритма - O(n^2)): " << time1 << endl;
     cout << "Список символов (сложность алгоритма - O(n^2)): " << time2 << endl;
     cout << "Битовый массив (сложность алгоритма - O(1)): " << time3 << endl;
     cout << "Машинное слово (сложность алгоритма - O(1)): " << time4 << endl;
-
-    // ХОТЯ МОЖЕТ ОСТАВИТЬ?)))))
 }
