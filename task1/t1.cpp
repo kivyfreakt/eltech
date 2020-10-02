@@ -12,14 +12,14 @@
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
-#include <cstring>
+#include <string>
 
 using namespace std;
 
 // ----- Константы -----
 
 const int U = 26; // мощность универсума
-const int ROLLS = 2; // количество повторений теста
+const int ROLLS = 10000000; // количество повторений теста
 
 // ----- Структуры -----
 
@@ -36,6 +36,7 @@ struct List
 // ----- Прототипы функций -----
 
 // функции конвертирования
+char* init_arr(string);
 char* to_array(List*);
 char* to_array(unsigned int);
 char* to_array(bool*);
@@ -61,6 +62,7 @@ int main()
     clock_t clock;
     double time1, time2, time3, time4;
 
+    string buff;
     char* A = nullptr;
     char* B = nullptr;
     char* C = nullptr;
@@ -86,16 +88,34 @@ int main()
 
     switch (menu)
     {
-        // case 1: // ввод данных
-        //     // Считываем строки, т.к самый удобный способ
-        //
-        //     // // конверитируем в машинные слова
-        //     // wA = to_word(A);
-        //     // wB = to_word(B);
-        //     // wC = to_word(C);
-        //     // wD = to_word(D);
-        //
-        // break;
+        case 1: // ввод данных
+            // Считываем строки, т.к самый удобный способ
+
+            cout << "Введите множество A: ";
+            cin >> buff;
+            A = init_arr(buff);
+            wA = to_word(A);
+            delete A;
+
+            cout << "Введите множество B: ";
+            cin >> buff;
+            B = init_arr(buff);
+            wB = to_word(B);
+            delete B;
+
+            cout << "Введите множество C: ";
+            cin >> buff;
+            C = init_arr(buff);
+            wC = to_word(C);
+            delete C;
+
+            cout << "Введите множество D: ";
+            cin >> buff;
+            D = init_arr(buff);
+            wD = to_word(D);
+            delete D;
+
+        break;
 
         case 2: // генерация данных
             // Генерируем машинные слова, т.к это проще всего
@@ -423,6 +443,19 @@ bool* to_bool(unsigned int num)
     return result;
 }
 
+char* init_arr(string S) {
+    int i,j,n;
+    char* ans;
+
+    n = S.length();
+    ans = new char[n+1];
+
+    for(i = 0; i < n; ++i)
+        ans[i] = S[i];
+
+    ans[i] = '\0';
+    return ans;
+}
 
 
 void print_table(double time1, double time2, double time3, double time4)
