@@ -1,112 +1,125 @@
-#include "char_array.h"
+#include "list.h"
 #include <iostream>
 
 
-// конструторы
-
-Set::Set(): name('A' + count++), pow(0), S()
+Set::Set() : name('A' + count++), pow(0), S(nullptr)
 {
-    S[0] = '\0';
+    std::cout << "-> Created " << name << "(" << pow << ") = [" << *S << "] \n";
 }
 
-Set::Set(char tag): name(tag), pow(0), S()
+Set::Set(char n) : name(n), pow(0), S(nullptr)
 {
     count++;
-    for (int i = 0; i < U; ++i)
-        if(rand()%2)
-            S[pow++] = i + 'A';
-    S[pow] = '\0';
+    auto w = rand();
+
+	for (int i = 0; i < U; i++)
+		if ((w >> i) & 1)
+            S = new El(i + 'A', A), ++pow;
+
+	std::cout << "-> Created " << name << "(" << pow << ") = [" << *S << "] \n";
 }
 
-Set::Set(const Set& other): name('A' + count++), pow(other.pow), S(new char[U+1])
+Set::Set(const Set & other) : name('A'+count++),  pow(other.pow), S(nullptr)
 {
-    
+	for(auto p = other.S; p; p = p->next)
+        S = new El(p->e, S);
+
+	std::cout << "-> Created " << name << "(" << pow << ") = ["
+                  << *S << "] from " << other.name << std::endl;
 }
 
-
-// операции
-
-Set & Set::operator = (const Set& other)
+Set & Set::operator &= (const Set& B)
 {
-    if (this != &other)
-    {
-        pow = other.pow;
-        for(int i = 0; other.S[i]; i++)
-        {
-            S[i] = other.S[i];
-        }
-        S[pow] = '\0';
-    }
-    return *this;
+	Set C;
+	for (auto i = S; i; i = i->next)
+	{
+		for (auto j = B.S; j; j = j->next)
+			if (i->e == j->e)
+				C.S = new El(i->e, C.S), ++C.pow;
+	}
+	swap(C);
+	std::cout << "; Received " << name << "(" << pow << ") = ["
+                  << *S << "] = " << C.name << "&" << B.name << std::endl;
+	return *this;
+}
+Set Set::operator & (const Set& B) const
+{
+	Set C(*this);
+	std::cout << "Calculation " << C.name << " & " << B.name << std::endl;
+	return C &= B;
 }
 
-Set & Set::operator &= (const Set& other)
+Set & Set::operator |= (const Set & B)
 {
-    Set C(*this);
-    pow = 0;
-    for (int i = 0; i < C.pow; ++i)
-        for(int j = 0; j < other.pow; j++)
-            if(C.S[i] == other.S[j])
-                S[pow++] = C.S[i];
-    S[pow] = '\0';
-    return *this;
+	Set C(*this);
+
+	for (auto i = B.S; i; i = i->next)
+	{
+		bool f = true;
+		for (auto j = S; f && j; j = j->next)
+			f = f && (i->e != j->e);
+		if (f)
+			C.S = new El(i->e, C.S), ++C.pow;
+	}
+	swap(C);
+	std::cout << "; Received " << name << "(" << pow << ") = ["
+                  << *S << "] = " << C.name << "|" << B.name << std::endl;
+	return *this;
 }
 
-Set Set::operator & (const Set& other) const
+Set Set::operator | (const Set& B) const
 {
-    Set C(*this);
-    return (C &= other);
+	Set C(*this);
+	std::cout << "Calculation " << C.name << " | " << B.name << std::endl;
+	return C |= B;
 }
 
-Set & Set::operator |= (const Set& other)
+Set Set::operator / (const Set& B) const
 {
-    for (int i = 0; i < other.pow; ++i)
-    {
-        bool f = true;
-        for(int j = 0; j < pow; j++)
-            if(other.S[i] == S[j])
-                f = false;
-        if (f)
-            S[pow++] = other.S[i];
-    }
-    S[pow] = '\0';
-    return *this;
-}
-
-Set Set::operator | (const Set& other) const
-{
-    Set C(*this);
-    return (C |= other);
-}
-
-Set Set::operator / (const Set& other) const
-{
-    Set C(*this);
-    return C & (~other);
+	Set C(*this);
+	std::cout << "Calculation " << C.name << " / " << B.name << std::endl;
+	return C & ~B;
 }
 
 Set Set::operator ~ () const
 {
-    Set result;
-    for (char c = 'A'; c <= 'Z'; ++c)
-    {
-        bool f = true;
-        for (int j = 0; j < pow; ++j)
-            if (c == S[j])
-            {
+	Set C;
+
+	for (char c = 'A'; c <= 'Z'; ++c)
+	{
+		bool f = true;
+
+		for (auto j = S; j && f; j = j->next)
+			if(c == j->e)
                 f = false;
-                break;
-            }
-        if (f)
-            result.S[result.pow++] = c;
-    }
-    result.S[result.pow] = 0;
-    return result;
+
+		if(f)
+			C.S = new El(c, C.S) , ++C.pow;
+	}
+
+	std::cout << "; Received " << C.name << "(" << C.pow << ") = [" << *C.S
+                  << "] = ~" << name << std::endl;
+
+	return C;
 }
 
-// интерфейс
+// Set& Set::operator = (const Set & B)
+// {
+// 	if (this != &B)
+// 	{   std::cout << "\nDeleted " << S << "(" << n << ") = [" << *A << "]";
+// 		delete A;
+// 		A = nullptr;
+// 		n = 0;
+// 		for(El * p = B.A; p; p = p->next)
+// 			A = new El(p->e, A), ++n;
+// 		S = 'A'+num++;
+// 	}
+// 	std::cout << "; Created " << S << "(" << pow << ") = [" << *A << "] from "
+//                 << B.S << std::endl;
+// 	return *this;
+// }
 
 void Set::print()
 {
-    std::cout << this->get_name() << " = {" << S << "}, |" << this->get_name() << "| = " << this->power() << std::endl;
+	std::cout << '\n' << name << "(" << pow << ") = [" << *A << "]";
 }

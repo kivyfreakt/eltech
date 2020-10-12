@@ -12,9 +12,12 @@ Set::Set(): name('A' + count++), pow(0), S(new char[U+1])
 Set::Set(char tag): name(tag), pow(0), S(new char[U+1])
 {
     count++;
+    auto w = rand();
+    
     for (int i = 0; i < U; ++i)
-        if(rand()%2)
+        if((w >> i) & 1)
             S[pow++] = i + 'A';
+
     S[pow] = '\0';
 }
 
