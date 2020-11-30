@@ -18,7 +18,7 @@ class Set
         ~Set(){delete [] S;} // деструктор класса
 
         // операции над множествами
-        Set& operator= (const Set&);
+        Set& operator = (const Set&);
         Set operator & (const Set&) const;
         Set operator | (const Set&) const;
         Set operator / (const Set&) const;
