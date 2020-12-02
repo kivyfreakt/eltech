@@ -81,10 +81,19 @@ Node *Tree::MakeNode(int depth, char flag)
 {
     Node *v = nullptr;
     int Y;
+
     if (flag)
     {
-        cout << "Node (" << num << ',' << depth << ") 1/0: ";
-        cin >> Y;
+        if (depth < maxrow)
+        {
+            cout << "Вершина (Глубина: " << depth << ", Тег: " << num << ") 1/0: ";
+            cin >> Y;
+        }
+        else
+        {
+            cout << "Вы достигли максимальной глубины дерева! Невозможно создать потомка\n";
+            Y = 0;
+        }
     }
     else
         Y = (depth < rand() % 4 + 1) && (num <= maxnum);
@@ -98,8 +107,10 @@ Node *Tree::MakeNode(int depth, char flag)
         v->middle = MakeNode(depth+1, flag);
         v->right = MakeNode(depth+1, flag);
     }
+
     if(depth-1 > max_depth)
         max_depth = depth-1;
+
     return v;
 }
 
@@ -107,7 +118,7 @@ void Tree::OutTree()
 {
     clrscr();
     OutNodes(root, 1, offset);
-    for (int i=0; i<maxrow; i++)
+    for (int i=0; i < maxrow; i++)
     {
         SCREEN[i][79]=0;
         cout << '\n' << SCREEN[i];
@@ -187,59 +198,53 @@ void Tree::RDFS(Node* v, int* count)
 }
 
 
-int menu()
-{
-    int point;
-    cout << "Выберите пункт меню" << endl;
-    cout << "1 - Ввести дерево" << endl;
-    cout << "2 - Сгенерировать дерево" << endl;
-    cout << "0 - Выход" << endl;
-    cout << "> ";
-    cin >> point;
-    return point;
-}
-
-
 int main()
 {
     srand(time(NULL));
-    Tree root('A', 'Z', 6);
+    Tree root('A', 'Z', 5);
     int menu_item,
         num_leaves;
+
     do
     {
-        switch(menu_item = menu())
+        cin.sync();
+        cout << "1 - Ввести дерево\n";
+        cout << "2 - Сгенерировать дерево\n";
+        cout << "> ";
+        cin >> menu_item;
+        switch(menu_item)
         {
             case 1:
                 root.InpTree();
+                cout << "\n\nВведенное дерево:\n";
                 break;
             case 2:
                 root.MakeTree();
-                break;
-            case 0:
-                cout << "До новых встреч!" << endl;
+                cout << "\n\nСгенерированное дерево:\n";
                 break;
             default:
-                cout << "Такого пункта не существует, повторите ввод!" << endl;
+                cout << "Такого пункта не существует, повторите ввод!\n";
+        }
+        if(cin.fail())
+        {
+            cin.clear();
+            cin.ignore(32767,'\n');
         }
     }
-    while(!menu_item);
-        if (menu_item)
-        {
-            if (root.exist())
-            {
-                cout << "\n\nДерево: \n";
-                root.OutTree();
-                cout<< '\n' << "Обход в глубину: ";
-                num_leaves = root.DFS();
-                cout << "\nКоличество листьев не на самом нижнем уровне: " << num_leaves << '\n';
-                num_leaves = 0;
-                cout<< '\n' << "Обход в глубину (рекурсивный): ";
-                root.RDFS(&num_leaves);
-                cout << "\nКоличество листьев не на самом нижнем уровне: " << num_leaves << '\n';
-            }
-            else cout << "Дерево пусто!\n";
-        }
+    while(menu_item > 2 || menu_item < 1 || cin.fail());
+
+    if (root.exist())
+    {
+        root.OutTree();
+        cout<< '\n' << "Обход в глубину: ";
+        num_leaves = root.DFS();
+        cout << "\nКоличество листьев не на самом нижнем уровне: " << num_leaves << '\n';
+        num_leaves = 0;
+        cout<< '\n' << "Обход в глубину (рекурсивный): ";
+        root.RDFS(&num_leaves);
+        cout << "\nКоличество листьев не на самом нижнем уровне: " << num_leaves << '\n';
+    }
+    else cout << "Дерево пусто!\n";
 
     return 0;
 }
