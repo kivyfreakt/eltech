@@ -1,4 +1,4 @@
-q/*
+/*
     Яловега Никита 9308
 */
 
@@ -8,7 +8,7 @@ q/*
 using namespace std;
 
 // #include "char_array.h"
-// #include "list.h"
+#include "list.h"
 // #include "bool.h"
 // #include "word.h"
 
@@ -23,8 +23,9 @@ int main() {
 
     clock_t start = clock();
 
+    E = A/(B&C&D);
     for (long rolls = 0; rolls < ROLLS; rolls++)
-        E = A/(B&C&D);
+        A/(B&C&D);
 
     clock_t end = clock();
 

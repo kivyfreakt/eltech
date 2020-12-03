@@ -23,7 +23,7 @@ class Set
         Set operator ~ () const;
 
         // интерфейс
-        inline char get_name() {return name;}
+        char get_name() {return name;}
         int power();
 
         void print();
