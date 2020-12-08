@@ -1,7 +1,3 @@
-/*
-    Яловега Никита 9308
-*/
-
 #include <iostream>
 #include <ctime>
 
@@ -15,17 +11,22 @@ using namespace std;
 int Set::U = 26;
 int Set::count = 0;
 
-const long ROLLS = 10000000;
+// const long ROLLS = 10000000;
+const long ROLLS = 3;
 
-int main() {
+int main()
+{
+    List::clear();
     srand(time(NULL));
     Set A('A'), B('B'), C('C'), D('D'), E;
-
+    List::mark();
     clock_t start = clock();
 
-    E = A/(B&C&D);
     for (long rolls = 0; rolls < ROLLS; rolls++)
-        A/(B&C&D);
+    {
+        List::release();
+        E = A/(B&C&D);
+    }
 
     clock_t end = clock();
 

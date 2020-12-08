@@ -1,7 +1,3 @@
-/*
-    Яловега Никита 9308
-*/
-
 #ifndef LIST_H
 #define LIST_H
 
@@ -29,9 +25,9 @@ public:
 	static void* operator new(size_t) { //Перегрузка new и delete - только функциями static!!!
            return (mup < maxmup? &mem[mup++] : nullptr); }
 	static void operator delete(void *, size_t) { }
-	static void mark(){ mup0 = mup;}	//Фиксировать состояние памяти
-	static void release() { mup = mup0; }   //Сбросить до фиксированного
-	static void clear(){ mup = 0; }	        //Очистить память полностью
+	static void mark(){ mup0 = mup;}
+	static void release() { mup = mup0; }
+	static void clear(){ mup = 0;}
 	friend class Set;
 	friend std::ostream & operator << ( std::ostream & o, List & S); //Перегрузка << для вывода
 };
@@ -49,7 +45,7 @@ class Set
         Set(const Set&); // конструтор копирования
         ~Set()
         {
-            std::cout << "\nУдалено " << name << " = {" << *S << "}, |" << name << "| = " << pow << std::endl;
+            // std::cout << "\nУдалено " << name << " = {" << *S << "}, |" << name << "| = " << pow << std::endl;
             S->List::~List(); //Здесь нужен явный вызов деструктора
         }
         // операции над множествами
