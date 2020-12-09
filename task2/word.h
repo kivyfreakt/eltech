@@ -1,7 +1,3 @@
-/*
-    Яловега Никита 9308
-*/
-
 #ifndef WORD_H
 #define WORD_H
 

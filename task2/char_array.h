@@ -1,7 +1,3 @@
-/*
-    Яловега Никита 9308
-*/
-
 #ifndef CHAR_H
 #define CHAR_H
 

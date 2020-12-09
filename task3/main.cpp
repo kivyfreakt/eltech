@@ -144,11 +144,8 @@ void Tree::OutNodes(Node *v, int r, int c)
 
 
 int Tree::DFS()
-/*
-     Нерекурсивный обход дерева в глубину
-*/
 {
-    const int MaxS = 20; // максимальный размер стека
+    const int MaxS = 20;
     int count = 0;
     STACK <Node *> stack(MaxS);
     stack.push(root);
@@ -178,9 +175,6 @@ void Tree::RDFS(int* c)
 }
 
 void Tree::RDFS(Node* v, int* count)
-/*
-    Рекурсивный обход дерева в глубину
-*/
 {
     if (v)
     {

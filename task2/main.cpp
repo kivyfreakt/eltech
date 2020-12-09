@@ -11,8 +11,7 @@ using namespace std;
 int Set::U = 26;
 int Set::count = 0;
 
-// const long ROLLS = 10000000;
-const long ROLLS = 3;
+const long ROLLS = 10000000;
 
 int main()
 {

@@ -11,8 +11,7 @@ class List{
 	static int mup, mup0;
 public:
 	List(): e('!'), next(nullptr){} // конструктор по умолчанию
-	List(char e, List *n = nullptr): e(e), next(n) {  }
-    // std::cout << "+" << e;
+	List(char e, List *n = nullptr): e(e), next(n) { /* std::cout << "+" << e; */ }
 	~List(){
         if(this)
         {//Прямой вызов деструктора требует такой проверки!!!
@@ -45,7 +44,7 @@ class Set
         Set(const Set&); // конструтор копирования
         ~Set()
         {
-            // std::cout << "\nУдалено " << name << " = {" << *S << "}, |" << name << "| = " << pow << std::endl;
+            std::cout << "\nУдалено " << name << " = {" << *S << "}, |" << name << "| = " << pow << std::endl;
             S->List::~List(); //Здесь нужен явный вызов деструктора
         }
         // операции над множествами

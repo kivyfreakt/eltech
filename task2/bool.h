@@ -1,7 +1,3 @@
-/*
-    Яловега Никита 9308
-*/
-
 #ifndef BOOL_H
 #define BOOL_H
 
