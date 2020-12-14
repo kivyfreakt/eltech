@@ -2,28 +2,31 @@
 #include <list>
 #include <queue>
 
+#ifndef GRAPH_H
+#define GRAPH_H
+
+
 class Graph
-{
-    int num, n, m;
-    vector <list<int>> LIST;
-
-    void spaning_tree(int);
-    public:
-        Graph(int); // ввод графа
-        // Graph(int, char); // генерирование случайного графа
-        void spaning_forest();
-        void print();
-};
-
-class Forest
 {
     int n; // количество вершин
     int m; // количество ребер
-    vector <pair<int, int>> edges; // список ребер
+    std::vector <std::list<int>> LIST;
+
+    void spanning_tree(int, bool*);
     public:
-        Forest();
-        void print();
-    friend class Graph;
+        Graph(int); // ввод графа
+        Graph(int, char); // генерирование случайного графа
+        void spanning_forest();
 };
 
-char ch(char c) {return c+'a';}
+// class Forest
+// {
+//     int n; // количество вершин
+//     int m; // количество ребер
+//     std::vector <std::pair<int, int>> edges; // список ребер
+//     public:
+//         Forest();
+//     friend class Graph;
+// };
+
+#endif

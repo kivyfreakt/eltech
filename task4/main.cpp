@@ -6,13 +6,12 @@ using namespace std;
 int main()
 {
     Graph g(6);
-    g.spaning_forest();
+    g.spanning_forest();
     return 0;
 }
 
-//
-// 2
-// 1
+// 
+// 1 a
 // 456
 // 56
 // 346
