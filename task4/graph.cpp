@@ -1,23 +1,25 @@
-#include <iostream>
-#include <string>
-#include <vector>
 #include "graph.h"
 
 using namespace std;
 
 char ch(char c) {return c+'a';}
 
-Graph::Graph(int maxV): n(0), m(0)
+Graph :: Graph(int maxV): n(0), m(0)
+/*
+    Ввод графа на maxV вершинах
+*/
 {
     int G[maxV][maxV];
     string s;
 
+    // обнуление матрицы
     for (int i = 0; i < maxV; ++i)
         for (int j = 0; j < maxV; ++j)
             G[i][j] = 0;
 
     cout << "\nВведите множества смежности (строки букв a до z)\n";
 
+    // заполнение матрицы смежности
     do
     {
         cout << "v[" << ch(n) << "] = ";
@@ -32,6 +34,7 @@ Graph::Graph(int maxV): n(0), m(0)
     }
     while(isalpha(s[0]) && n < maxV);
 
+    // заполнение списка смежности
     n = m = 0;
     LIST.resize(maxV);
     for (int i = 0; i < maxV; ++i)
@@ -57,15 +60,22 @@ Graph::Graph(int maxV): n(0), m(0)
 }
 
 
-Graph::Graph(int maxV, char c): n(0), m(0)
+Graph :: Graph(int maxV, char c): n(0), m(0)
+/*
+    Генерация случайного графа на maxV вершинах.
+*/
 {
     int G[maxV][maxV];
-    string s;
 
+    // генерация случайной матрицы смежности
     for (int i = 0; i < maxV; ++i)
-        for (int j = 0; j < i; ++j)
-            G[i][j] = G[j][i] = rand()%2;
+        for (int j = i; j < maxV; ++j)
+            if (i == j)
+                G[i][j] = G[j][i] = 0;
+            else
+                G[i][j] = G[j][i] = rand()%2;
 
+    // заполнение списка смежности
     n = m = 0;
     LIST.resize(maxV);
     for (int i = 0; i < maxV; ++i)
@@ -92,7 +102,7 @@ Graph::Graph(int maxV, char c): n(0), m(0)
 
 
 
-void Graph :: spanning_tree(int start_node, bool* visited)
+void Graph :: spanning_tree(int start_node, bool* visited, vector <pair<int, int>> *tree)
 /*
     Поиск стягивающего дерева поиском в ширину.
 */
@@ -107,33 +117,40 @@ void Graph :: spanning_tree(int start_node, bool* visited)
         q.pop();
 
         for (auto adj_node : LIST[current_node])
-        {
             if (!visited[adj_node])
             {
                 visited[adj_node] = true;
                 q.push(adj_node);
-                cout << current_node << ' ' << adj_node << '\n';
-                // добавить ребро (current_node, adj_node) в дерево
+                // cout << "Добавлено ребро: " << current_node << ' ' << adj_node << '\n';
+                tree->push_back(make_pair(current_node, adj_node));
             }
-        }
     }
     cout << "\n\n";
 }
 
-void Graph :: spanning_forest()
+Forest Graph :: spanning_forest()
 /*
     Поиск стягивающего леса серией поисков в ширину.
 */
 {
-    // создать лес
-    bool *visited = new bool[n];
+
+    Forest f(n); // т.к стягивающий лес, то количество вершин графа = количество вершин леса
+    bool *visited = new bool[n]; // список посещенных вершин для обхода всех компонент
 
     for (int node = 0; node < n; ++node)
-    {
         if (!visited[node]) // если вершина не была посещена, то
         {
             // запускаем обход из этой вершины
-            spanning_tree(node, visited);
+            spanning_tree(node, visited, &f.edges);
         }
-    }
+
+    return f;
+}
+
+void Forest :: print()
+{
+    cout << "Количество вершин: " << n << '\n';
+    cout << "Список ребер: \n";
+    for (auto e:edges)
+        cout << e.first << " " << e.second << '\n';
 }
