@@ -27,14 +27,14 @@ int main()
     //         case 1:
     //             n = get_num_nodes();
     //             Graph g(n);
-    //             cout << "\n\nВведенный граф:\n";
-    //             g.spanning_forest();
+    //             Forest f = g.spanning_forest();
+    //             f.print();
     //             break;
     //         case 2:
     //             n = get_num_nodes();
     //             Graph g(n, 1);
-    //             cout << "\n\nСгенерированный граф:\n";
-    //             g.spanning_forest();
+    //             Forest f = g.spanning_forest();
+    //             f.print();
     //             break;
     //         default:
     //             cout << "Такого пункта не существует, повторите ввод!\n";

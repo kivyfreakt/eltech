@@ -143,7 +143,7 @@ Forest Graph :: spanning_forest()
             // запускаем обход из этой вершины
             spanning_tree(node, visited, &f.edges);
         }
-
+    delete [] visited;
     return f;
 }
 
@@ -152,5 +152,5 @@ void Forest :: print()
     cout << "Количество вершин: " << n << '\n';
     cout << "Список ребер: \n";
     for (auto e:edges)
-        cout << e.first << " " << e.second << '\n';
+        cout << ch(e.first) << " " << ch(e.second) << '\n';
 }

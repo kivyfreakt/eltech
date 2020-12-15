@@ -31,5 +31,4 @@ class Graph
         Forest spanning_forest(); // постоение ширинного стягивающего леса
 };
 
-
 #endif
