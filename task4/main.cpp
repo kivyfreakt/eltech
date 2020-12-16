@@ -25,6 +25,7 @@ int main()
         cout << "3 - Использовать пример\n";
         cout << "0 - Выход\n";
         cout << "> ";
+        
         cin >> menu_item;
         switch(menu_item)
         {

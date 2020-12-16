@@ -1,11 +1,14 @@
+#ifndef GRAPH_H
+#define GRAPH_H
+
 #include <vector>
 #include <list>
 #include <queue>
-#include <iostream>
 #include <string>
+#include <iostream>
 
-#ifndef GRAPH_H
-#define GRAPH_H
+
+using namespace std;
 
 class Forest
 {

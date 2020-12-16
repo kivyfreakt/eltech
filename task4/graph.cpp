@@ -1,13 +1,11 @@
 #include "graph.h"
 
-using namespace std;
-
-char ch(char c) {return c+'a';}
+char name_node(char c) {return c+'a';}
 
 
 Graph :: Graph(): n(11), m(10)
 /*
-    Пример графа
+    Пример графа.
 */
 {
     LIST.resize(n);
@@ -22,19 +20,26 @@ Graph :: Graph(): n(11), m(10)
     LIST[8].push_back(7);LIST[8].push_back(9);
     LIST[9].push_back(7);LIST[9].push_back(8);
 
-    // a b
-    // c d
-    // c g
-    // d e
-    // d f
-    // h i
-    // h j
+    cout << "Пример графа\nСписок смежности:\n";
+    cout << "a: -b---------\n";
+    cout << "b: a----------\n";
+    cout << "c: ---d--g----\n";
+    cout << "d: --c-ef-----\n";
+    cout << "e: ---d-fg----\n";
+    cout << "f: ---de------\n";
+    cout << "g: --c-e------\n";
+    cout << "h: --------ij-\n";
+    cout << "i: -------h-j-\n";
+    cout << "j: -------hi--\n";
+    cout << "k: -----------\n";
+    cout << "|V| = 11, |E| = 10\n";
+
 }
 
 
 Graph :: Graph(int maxV): n(0), m(0)
 /*
-    Ввод графа на maxV вершинах
+    Ввод графа на maxV вершинах.
 */
 {
     int G[maxV][maxV];
@@ -50,7 +55,7 @@ Graph :: Graph(int maxV): n(0), m(0)
     // заполнение матрицы смежности
     do
     {
-        cout << "v[" << ch(n) << "] = ";
+        cout << "v[" << name_node(n) << "] = ";
         cin >> s;
         for (auto i : s)
             if (isalpha(i))
@@ -62,20 +67,20 @@ Graph :: Graph(int maxV): n(0), m(0)
     }
     while(n < maxV);
 
-    cout << "\nВведенное дерево\nСписок смежности:";
+    cout << "\nВведенный граф\nСписок смежности:";
     // заполнение списка смежности
     n = m = 0;
     LIST.resize(maxV);
     for (int i = 0; i < maxV; ++i)
     {
         int f = 0;
-        cout << '\n' << ch(i) << ": ";
+        cout << '\n' << name_node(i) << ": ";
         for (int j = 0; j < maxV; ++j)
             if (G[i][j])
             {
                 ++f;
                 LIST[i].push_back(j);
-                cout << ch(j);
+                cout << name_node(j);
             }
             else cout << '-';
         m += f;
@@ -101,20 +106,20 @@ Graph :: Graph(int maxV, char c): n(0), m(0)
             else
                 G[i][j] = G[j][i] = rand()%2;
 
-    cout << "\nСгенерированное дерево\nСписок смежности:";
+    cout << "\nСгенерированный граф\nСписок смежности:";
     // заполнение списка смежности
     n = m = 0;
     LIST.resize(maxV);
     for (int i = 0; i < maxV; ++i)
     {
         int f = 0;
-        cout << '\n' << ch(i) << ": ";
+        cout << '\n' << name_node(i) << ": ";
         for (int j = 0; j < maxV; ++j)
             if (G[i][j])
             {
                 ++f;
                 LIST[i].push_back(j);
-                cout << ch(j);
+                cout << name_node(j);
             }
             else cout << '-';
         m += f;
@@ -123,7 +128,6 @@ Graph :: Graph(int maxV, char c): n(0), m(0)
 
     cout << "\n|V| = " << n << ", |E| = " << m/2 << '\n';
 }
-
 
 
 void Graph :: spanning_tree(int start_node, bool* visited, vector <pair<int, int>> *tree)
@@ -151,6 +155,7 @@ void Graph :: spanning_tree(int start_node, bool* visited, vector <pair<int, int
     }
 }
 
+
 Forest Graph :: spanning_forest()
 /*
     Поиск стягивающего леса серией поисков в ширину.
@@ -172,16 +177,20 @@ Forest Graph :: spanning_forest()
     return f;
 }
 
+
 void Forest :: print()
+/*
+    Вывод леса.
+*/
 {
     cout << "\n\nШиринный стягивающий лес. \n";
     cout << "|V| = " << n << ", |E| = " << m << '\n';
 
     cout << "Вершины: ";
     for (int i = 0; i < n; ++i)
-        cout << ch(i) << " ";
+        cout << name_node(i) << " ";
 
     cout << "\nСписок ребер: \n";
     for (auto e:edges)
-        cout << ch(e.first) << " " << ch(e.second) << '\n';
+        cout << name_node(e.first) << " " << name_node(e.second) << '\n';
 }
