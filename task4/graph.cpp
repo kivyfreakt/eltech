@@ -32,8 +32,9 @@ Graph :: Graph(int maxV): n(0), m(0)
             }
         ++n;
     }
-    while(isalpha(s[0]) && n < maxV);
+    while(n < maxV);
 
+    cout << "\nВведенное дерево\nСписок смежности:";
     // заполнение списка смежности
     n = m = 0;
     LIST.resize(maxV);
@@ -50,10 +51,7 @@ Graph :: Graph(int maxV): n(0), m(0)
             }
             else cout << '-';
         m += f;
-        if (f)
-            ++n;
-        else
-            break;
+        ++n;
     }
 
     cout << "\n|V| = " << n << ", |E| = " << m/2 << '\n';
@@ -75,6 +73,7 @@ Graph :: Graph(int maxV, char c): n(0), m(0)
             else
                 G[i][j] = G[j][i] = rand()%2;
 
+    cout << "\nСгенерированное дерево\nСписок смежности:";
     // заполнение списка смежности
     n = m = 0;
     LIST.resize(maxV);
@@ -91,10 +90,7 @@ Graph :: Graph(int maxV, char c): n(0), m(0)
             }
             else cout << '-';
         m += f;
-        if (f)
-            ++n;
-        else
-            break;
+        ++n;
     }
 
     cout << "\n|V| = " << n << ", |E| = " << m/2 << '\n';
@@ -125,7 +121,6 @@ void Graph :: spanning_tree(int start_node, bool* visited, vector <pair<int, int
                 tree->push_back(make_pair(current_node, adj_node));
             }
     }
-    cout << "\n\n";
 }
 
 Forest Graph :: spanning_forest()
@@ -143,14 +138,22 @@ Forest Graph :: spanning_forest()
             // запускаем обход из этой вершины
             spanning_tree(node, visited, &f.edges);
         }
+
+    f.m = f.edges.size();
     delete [] visited;
     return f;
 }
 
 void Forest :: print()
 {
-    cout << "Количество вершин: " << n << '\n';
-    cout << "Список ребер: \n";
+    cout << "\n\nШиринный стягивающий лес. \n";
+    cout << "|V| = " << n << ", |E| = " << m << '\n';
+
+    cout << "Вершины: ";
+    for (int i = 0; i < n; ++i)
+        cout << ch(i) << " ";
+
+    cout << "\nСписок ребер: \n";
     for (auto e:edges)
         cout << ch(e.first) << " " << ch(e.second) << '\n';
 }

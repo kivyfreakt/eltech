@@ -9,48 +9,81 @@ using namespace std;
 const int MAXV = 20; // максимальное количество вершин
 
 short get_num_nodes();
+void input_case();
+void generate_case();
+void example_case();
 
 int main()
 {
     srand(time(nullptr));
-    int menu_item, n;
-    // do
-    // {
-    //     cin.sync();
-    //     cout << "1 - Ввести граф\n";
-    //     cout << "2 - Сгенерировать граф\n";
-    //     cout << "3 - Использовать пример\n";
-    //     cout << "> ";
-    //     cin >> menu_item;
-    //     switch(menu_item)
-    //     {
-    //         case 1:
-    //             n = get_num_nodes();
-    //             Graph g(n);
-    //             Forest f = g.spanning_forest();
-    //             f.print();
-    //             break;
-    //         case 2:
-    //             n = get_num_nodes();
-    //             Graph g(n, 1);
-    //             Forest f = g.spanning_forest();
-    //             f.print();
-    //             break;
-    //         default:
-    //             cout << "Такого пункта не существует, повторите ввод!\n";
-    //     }
-    //     if(cin.fail())
-    //     {
-    //         cin.clear();
-    //         cin.ignore(32767,'\n');
-    //     }
-    // }
-    // while(menu_item > 2 || menu_item < 1 || cin.fail());
-    n = get_num_nodes();
-    Graph g(n, 1);
+    int menu_item;
+
+    do
+    {
+        cout << "1 - Ввести граф\n";
+        cout << "2 - Сгенерировать граф\n";
+        cout << "3 - Использовать пример\n";
+        cout << "0 - Выход\n";
+        cout << "> ";
+        cin >> menu_item;
+        switch(menu_item)
+        {
+            case 1:
+                input_case();
+                break;
+            case 2:
+                generate_case();
+                break;
+            case 3:
+                example_case();
+                break;
+            case 0:
+                cout << "";
+                break;
+            default:
+                cout << "Такого пункта не существует, повторите ввод!\n";
+        }
+    }
+    while(menu_item);
+
+    return 0;
+}
+
+void input_case()
+{
+    int n = get_num_nodes();
+    Graph g(n);
     Forest f = g.spanning_forest();
     f.print();
-    return 0;
+}
+
+void generate_case()
+{
+    int n = get_num_nodes();
+    Graph g(n, 0);
+    Forest f = g.spanning_forest();
+    f.print();
+}
+
+void example_case()
+{
+    /*
+    11
+    b
+    a
+    dg
+    fe
+    g
+    e
+    ce
+    ij
+    hj
+    hi
+    */
+    // int n = get_num_nodes();
+    // Graph g();
+    // Forest f = g.spanning_forest();
+    // f.print();
 }
 
 short get_num_nodes()
@@ -62,7 +95,7 @@ short get_num_nodes()
 
     do
     {
-        cout << "Введите количество вершин графа (число от 0 до " << MAXV << "): ";
+        cout << "Введите количество вершин графа (число от 1 до " << MAXV << "): ";
         cin >> n;
         if (cin.fail())
         {
@@ -73,9 +106,9 @@ short get_num_nodes()
         else
         {
         if (n > MAXV)
-            cout << "\nЧисло вершин не должно превышать 20.\n";
+            cout << "\nЧисло вершин не должно превышать " << MAXV << '\n';
         if (n < 1)
-            cout << "\nЧисло вершин не должно быть отрицательным или 0.\n";
+            cout << "\nЧисло вершин не должно быть отрицательным или 0\n";
         }
 
     } while(cin.fail() || n < 1 || n > MAXV);
