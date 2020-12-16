@@ -6,7 +6,7 @@
 
 using namespace std;
 
-const int MAXV = 20; // максимальное количество вершин
+const int MAXV = 26; // максимальное количество вершин
 
 short get_num_nodes();
 void input_case();
@@ -67,23 +67,9 @@ void generate_case()
 
 void example_case()
 {
-    /*
-    11
-    b
-    a
-    dg
-    fe
-    g
-    e
-    ce
-    ij
-    hj
-    hi
-    */
-    // int n = get_num_nodes();
-    // Graph g();
-    // Forest f = g.spanning_forest();
-    // f.print();
+    Graph g;
+    Forest f = g.spanning_forest();
+    f.print();
 }
 
 short get_num_nodes()

@@ -26,6 +26,7 @@ class Graph
 
     void spanning_tree(int, bool*, std::vector<std::pair<int, int>>*); // построение сгивающего дерева
     public:
+        Graph(); // пример графа
         Graph(int); // ввод графа
         Graph(int, char); // генерирование случайного графа
         Forest spanning_forest(); // постоение ширинного стягивающего леса

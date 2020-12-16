@@ -4,6 +4,34 @@ using namespace std;
 
 char ch(char c) {return c+'a';}
 
+
+Graph :: Graph(): n(11), m(10)
+/*
+    Пример графа
+*/
+{
+    LIST.resize(n);
+    LIST[0].push_back(1);
+    LIST[1].push_back(0);
+    LIST[2].push_back(3);LIST[2].push_back(6);
+    LIST[3].push_back(2);LIST[3].push_back(4);LIST[3].push_back(5);
+    LIST[4].push_back(3);LIST[4].push_back(5);LIST[4].push_back(6);
+    LIST[5].push_back(3);LIST[5].push_back(4);
+    LIST[6].push_back(2);LIST[6].push_back(4);
+    LIST[7].push_back(8);LIST[7].push_back(9);
+    LIST[8].push_back(7);LIST[8].push_back(9);
+    LIST[9].push_back(7);LIST[9].push_back(8);
+
+    // a b
+    // c d
+    // c g
+    // d e
+    // d f
+    // h i
+    // h j
+}
+
+
 Graph :: Graph(int maxV): n(0), m(0)
 /*
     Ввод графа на maxV вершинах
