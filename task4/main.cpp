@@ -25,7 +25,7 @@ int main()
         cout << "3 - Использовать пример\n";
         cout << "0 - Выход\n";
         cout << "> ";
-        
+
         cin >> menu_item;
         switch(menu_item)
         {
@@ -57,6 +57,7 @@ void input_case()
     Forest f = g.spanning_forest();
     f.print();
 }
+
 
 void generate_case()
 {

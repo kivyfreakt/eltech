@@ -37,45 +37,48 @@ Graph :: Graph(): n(11), m(10)
 }
 
 
-Graph :: Graph(int maxV): n(0), m(0)
+Graph :: Graph(int maxV): n(maxV), m(0)
 /*
-    Ввод графа на maxV вершинах.
+    Ввод графа на n вершинах.
 */
 {
-    int G[maxV][maxV];
+    int G[n][n];
     string s;
 
+
     // обнуление матрицы
-    for (int i = 0; i < maxV; ++i)
-        for (int j = 0; j < maxV; ++j)
+    for (int i = 0; i < n; ++i)
+        for (int j = 0; j < n; ++j)
             G[i][j] = 0;
 
     cout << "\nВведите множества смежности (строки букв a до z)\n";
 
+
     // заполнение матрицы смежности
+    int k = 0;
     do
     {
-        cout << "v[" << name_node(n) << "] = ";
+        cout << "v[" << name_node(k) << "] = ";
         cin >> s;
         for (auto i : s)
             if (isalpha(i))
             {
                 int j = tolower(i) - 'a';
-                G[n][j] = G[j][n] = 1;
+                G[k][j] = G[j][k] = 1;
             }
-        ++n;
+        k++;
     }
-    while(n < maxV);
+    while(k < n);
 
     cout << "\nВведенный граф\nСписок смежности:";
     // заполнение списка смежности
-    n = m = 0;
-    LIST.resize(maxV);
-    for (int i = 0; i < maxV; ++i)
+    m = 0;
+    LIST.resize(n);
+    for (int i = 0; i < n; ++i)
     {
         int f = 0;
         cout << '\n' << name_node(i) << ": ";
-        for (int j = 0; j < maxV; ++j)
+        for (int j = 0; j < n; ++j)
             if (G[i][j])
             {
                 ++f;
@@ -84,23 +87,22 @@ Graph :: Graph(int maxV): n(0), m(0)
             }
             else cout << '-';
         m += f;
-        ++n;
     }
 
     cout << "\n|V| = " << n << ", |E| = " << m/2 << '\n';
 }
 
 
-Graph :: Graph(int maxV, char c): n(0), m(0)
+Graph :: Graph(int maxV, char c): n(maxV), m(0)
 /*
-    Генерация случайного графа на maxV вершинах.
+    Генерация случайного графа на n вершинах.
 */
 {
-    int G[maxV][maxV];
+    int G[n][n];
 
     // генерация случайной матрицы смежности
-    for (int i = 0; i < maxV; ++i)
-        for (int j = i; j < maxV; ++j)
+    for (int i = 0; i < n; ++i)
+        for (int j = i; j < n; ++j)
             if (i == j)
                 G[i][j] = G[j][i] = 0;
             else
@@ -108,13 +110,13 @@ Graph :: Graph(int maxV, char c): n(0), m(0)
 
     cout << "\nСгенерированный граф\nСписок смежности:";
     // заполнение списка смежности
-    n = m = 0;
-    LIST.resize(maxV);
-    for (int i = 0; i < maxV; ++i)
+    m = 0;
+    LIST.resize(n);
+    for (int i = 0; i < n; ++i)
     {
         int f = 0;
         cout << '\n' << name_node(i) << ": ";
-        for (int j = 0; j < maxV; ++j)
+        for (int j = 0; j < n; ++j)
             if (G[i][j])
             {
                 ++f;
@@ -123,14 +125,13 @@ Graph :: Graph(int maxV, char c): n(0), m(0)
             }
             else cout << '-';
         m += f;
-        ++n;
     }
 
     cout << "\n|V| = " << n << ", |E| = " << m/2 << '\n';
 }
 
 
-void Graph :: spanning_tree(int start_node, bool* visited, vector <pair<int, int>> *tree)
+void Graph :: spanning_tree(int start_node, bool* visited, vector <pair<int, int>> *tree, int* m)
 /*
     Поиск стягивающего дерева поиском в ширину.
 */
@@ -150,7 +151,7 @@ void Graph :: spanning_tree(int start_node, bool* visited, vector <pair<int, int
                 visited[adj_node] = true;
                 q.push(adj_node);
                 // cout << "Добавлено ребро: " << current_node << ' ' << adj_node << '\n';
-                tree->push_back(make_pair(current_node, adj_node));
+                (*tree)[(*m)++] = (make_pair(current_node, adj_node));
             }
     }
 }
@@ -165,14 +166,17 @@ Forest Graph :: spanning_forest()
     Forest f(n); // т.к стягивающий лес, то количество вершин графа = количество вершин леса
     bool *visited = new bool[n]; // список посещенных вершин для обхода всех компонент
 
+    f.m = 0;
+    f.edges.resize(n-1);
+
     for (int node = 0; node < n; ++node)
         if (!visited[node]) // если вершина не была посещена, то
         {
             // запускаем обход из этой вершины
-            spanning_tree(node, visited, &f.edges);
+            spanning_tree(node, visited, &f.edges, &f.m);
         }
 
-    f.m = f.edges.size();
+    f.edges.resize(f.m);
     delete [] visited;
     return f;
 }
@@ -190,7 +194,12 @@ void Forest :: print()
     for (int i = 0; i < n; ++i)
         cout << name_node(i) << " ";
 
-    cout << "\nСписок ребер: \n";
-    for (auto e:edges)
-        cout << name_node(e.first) << " " << name_node(e.second) << '\n';
+    if (m > 0)
+    {
+        cout << "\nСписок ребер: \n";
+        for (auto e:edges)
+            cout << name_node(e.first) << " " << name_node(e.second) << '\n';
+    }
+    else
+        cout << "\nЛес не содержит ребер.\n";
 }
