@@ -1,0 +1,75 @@
+#include <conio.h>
+#include <dos.h>
+
+const char* const colors[] =
+{
+    "BLACK",
+    "BLUE",
+    "GREEN",
+    "CYAN",
+    "RED",
+    "MAGENTA",
+    "BROWN",
+    "LIGHTGRAY",
+    "DARKGRAY",
+    "LIGHTBLUE",
+    "LIGHTGREEN",
+    "LIGHTCYAN",
+    "LIGHTRED",
+    "LIGHTMAGENTA",
+    "YELLOW",
+    "WHITE"
+};
+
+void scroll(int dir, int S, int x1, int y1, int x2, int y2)
+{
+    union REGS r;
+
+    r.h.al = S;
+
+    r.h.ah = dir;
+    r.h.ch = y1 - 1;
+    r.h.cl = x1 - 1;
+    r.h.dh = x2 - 1;
+    r.h.dl = y2 - 1;
+    r.h.bh = BLACK;
+
+    int86(0x10, &r, &r);
+}
+
+int main()
+{
+
+    int x1 = 15,
+        y1 = 8,
+        x2 = 65,
+        y2 = 18,
+        S = 3;
+    float T = 0.8;
+
+    int i, text_color, text_background;
+
+    clrscr();
+    window(x1, y1, x2, y2);
+    gotoxy(1,1);
+
+    for (i = 0, text_color = 5, text_background = 0;
+        !kbhit();
+        i++, text_color = (text_color + 1)%16, text_background = (text_background + 3)%16,)
+    {
+        textcolor(text_color);
+        textbackground(text_background);
+
+        cprintf("test %d", i);
+
+        textcolor(WHITE);
+        textbackground(BLACK);
+
+        cprintf("text: %s bg: %d", colors[text_color], text_background);
+
+        scroll(DOWN, S, x1, y1, x2, y2);
+        gotoxy(1,1);
+        delay(1000 * T);
+    }
+
+}
