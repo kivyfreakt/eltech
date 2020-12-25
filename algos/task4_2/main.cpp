@@ -6,12 +6,14 @@
 
 using namespace std;
 
+const int MAXV = 26; // максимальное количество вершин
+
 int main()
 {
     srand(time(nullptr));
-    int n;
-    cin >> n;
-    Tree t1;
+    // int n;
+    // cin >> n;
+    Tree t1();
     Tree t2('0');
 
     if (t1.is_isomorph(t2))

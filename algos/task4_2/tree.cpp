@@ -79,9 +79,10 @@ Tree :: Tree(int maxV): n(maxV)
     Ввод дерева списками смежности
 */
 {
+    // сделать норм ввод/вывод
     string s;
     char r;
-    cout << "\nВведите корень дерева: \n";
+    cout << "\nВведите корень дерева (буква): \n";
     cin >> r;
     root = (int)(tolower(r) - 'a');
 
@@ -104,7 +105,9 @@ Tree :: Tree(int maxV): n(maxV)
 
 Tree :: Tree(int maxV, char c): n(maxV), root(0)
 /*
-    Генерация случайного дерева (для простоты корнем будет нулевая вершина)
+    Генерация случайного дерева
+
+    (для простоты корнем будет нулевая вершина)
 */
 {
     int G[n][n];
@@ -143,7 +146,7 @@ bool Tree :: is_isomorph(Tree other)
     Возвращает истину, если графы изоморфны
 */
 {
-    cout << dfs_exec() << "\n" << other.dfs_exec() << "\n";
+    // cout << dfs_exec() << "\n" << other.dfs_exec() << "\n";
     if (dfs_exec() == other.dfs_exec())
         return true;
     else
