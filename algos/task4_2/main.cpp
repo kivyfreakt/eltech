@@ -61,6 +61,7 @@ void example()
         cout << "\nДеревья не изоморфны\n\n\n";
 }
 
+
 void input()
 {
     int n = get_num_nodes();
