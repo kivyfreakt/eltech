@@ -38,6 +38,7 @@ Tree :: Tree()
     cout << "g: ---------\n";
     cout << "h: --------i\n";
     cout << "i: ---------\n";
+    cout << "Корень - " << name(root) << "\n";
     cout << "|V| = 9\n\n";
 }
 
@@ -70,6 +71,7 @@ Tree :: Tree(char c)
     cout << "g: ---------\n";
     cout << "h: ---------\n";
     cout << "i: ---------\n";
+    cout << "Корень - " << name(root) << "\n";
     cout << "|V| = 9\n\n";
 }
 
@@ -82,7 +84,7 @@ Tree :: Tree(int maxV): n(maxV)
     // сделать норм ввод/вывод
     string s;
     char r;
-    cout << "\nВведите корень дерева (буква): \n";
+    cout << "\nВведите корень дерева (буква): ";
     cin >> r;
     root = (int)(tolower(r) - 'a');
 
@@ -135,19 +137,19 @@ Tree :: Tree(int maxV, char c): n(maxV), root(0)
             }
             else cout << '-';
     }
-
-    cout << "\n|V| = " << n << "\n\n";
+    cout << "\nКорень - " << name(root) << "\n";
+    cout << "|V| = " << n << "\n\n";
 }
 
 
-bool Tree :: is_isomorph(Tree other)
+bool Tree :: is_isomorph(Tree *other)
 /*
     Проверка деревьев на изоморфность. Сравнение кодов деревьев.
     Возвращает истину, если графы изоморфны
 */
 {
     // cout << dfs_exec() << "\n" << other.dfs_exec() << "\n";
-    if (dfs_exec() == other.dfs_exec())
+    if (dfs_exec() == other->dfs_exec())
         return true;
     else
         return false;
