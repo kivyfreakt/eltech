@@ -310,7 +310,7 @@ void get_computer_move(char board[])
             if (board[move] == 'a')
             {
                 board[move] = get_fig();
-                found = winner(board) == !count%2;
+                found = winner(board) == count%2;
                 board[move] = 'a';
             }
             if (!found)
@@ -388,6 +388,6 @@ char get_key()
 {
     union REGS in, out;
     in.h.ah = 0x10; // функция 10h ожидание ввода символа
-    int86(0x16, &in, &out);
+    int86(0x16, &in, &out); // прерывание 16h
     return out.h.al - '0';
 }
