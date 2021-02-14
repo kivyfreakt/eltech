@@ -2,101 +2,102 @@
 #define SHAPE_H
 
 #include <iostream>
+#include <list>
 #include <string>
 #include "screen.h"
 
-struct shape {
-	static shape* list;
-	shape* next;
-	shape() { next = list; list = this; }
-	virtual point north() const = 0;
-	virtual point south() const = 0;
-	virtual point east() const = 0;
-	virtual point west() const = 0;
-	virtual point neast() const = 0;
-	virtual point seast() const = 0;
-	virtual point nwest() const = 0;
-	virtual point swest() const = 0;
-	virtual void draw() = 0;
-	virtual void move(int, int) = 0;
-
-private:
-	shape(const shape&);
-	shape(const shape&&);
-};
-
-//--------------------------------------------------------------------
-//Работа с экраном
-
-char screen[XMAX][YMAX];
-
-enum color { black = '*', white = ' ' };
+char screen[YMAX][XMAX];
+enum color { black = '*', white = '.' };
 
 void screen_init()
 {
-	for (int y = 0; y < YMAX; ++y)
-		for (int x = 0; x < XMAX; ++x)
-			screen[x][y] = white;
+    for (auto y = 0; y < YMAX; ++y)
+        for (auto &x : screen[y])
+            x = white;
 }
 
-inline int on_screen(int a, int b) //Попадание на экран
+void screen_destroy()
 {
-    return (0 <= a && a < XMAX && 0 <= b && b < YMAX);
+    for (auto y = 0; y < YMAX; ++y)
+        for (auto &x : screen[y])
+            x = black;
+}
+
+bool on_screen(int a, int b) // проверка попадания точки на экран
+{
+    return 0 <= a && a < XMAX && 0 <= b && b < YMAX;
 }
 
 void put_point(int a, int b)
 {
-	if (on_screen(a, b))
-        screen[a][b] = black;
+    if (on_screen(a,b))
+        screen[b][a] = black;
 }
 
 void put_line(int x0, int y0, int x1, int y1)
+/* Алгоритм Брезенхэма для прямой:
+рисование отрезка прямой от (x0,y0) до (x1,y1).
+Уравнение прямой: b(x-x0) + a(y-y0) = 0.
+Минимизируется величина abs(eps), где eps = 2*(b(x-x0)) + a(y-y0).
+*/
 {
-	/*
-	Рисование отрезка прямой (x0, y0) - (x1, y1)
-	Уравнение прямой: b(x-x0) + a(y-y0) = 0
-	Минимизируется величина abs(eps)
-	где eps = 2*(b(x-x0))+a(y-y0)
-	*/
-	int dx = 1;
-	int a = x1 - x0;
-	if (a < 0)
-        dx = -1, a = -a;
-	int dy = 1;
-	int b = y1 - y0;
-	if (b < 0)
-        dy = -1, b = -b;
-	int two_a = 2 * a;
-	int two_b = 2 * b;
-	int xcrit = -b + two_a;
-	register int eps = 0;
-
-	while (1)
-    {
-		put_point(x0, y0);
-		if (x0 == x1 && y0 == y1)
-            break;
-		if (eps <= xcrit)
-            x0 += dx, eps += two_b;
-		if (eps >= a || a < b)
-            y0 += dy, eps -= two_a;
-	}
+    int dx = 1;
+    int a = x1 - x0; if (a < 0) dx = -1, a = -a;
+    int dy = 1;
+    int b = y1 - y0; if (b < 0) dy = -1, b = -b;
+    int two_a = 2*a;
+    int two_b = 2*b;
+    int xcrit = -b + two_a;
+    int eps = 0;
+    for (;;) { //Формирование прямой линии по точкам
+        put_point(x0, y0);
+        if (x0 == x1 && y0 == y1) break;
+        if (eps <= xcrit) x0 += dx, eps += two_b;
+        if (eps >= a || a < b) y0 += dy, eps -= two_a;
+    }
 }
 
-void screen_clear() { screen_init(); }
+void screen_clear(){ screen_init(); } //Очистка экрана
 
-void screen_refresh()
+void screen_refresh() // Обновление экрана
 {
-	for (int y = YMAX-1; 0<=y; --y)
+    for (int y = YMAX-1; 0 <= y; --y) // с верхней строки до нижней
     {
-		for (int x = 0; x < XMAX; ++x)
-			std::cout << screen[x][y];
-		//std::cout << '\n';
-	}
+        for (auto x : screen[y]) // от левого столбца до правого
+            std::cout << x;
+        std::cout << '\n';
+    }
 }
 
+struct shape
+{
+    static list<shape> shapes; // Список фигур (один на все фигуры!)
+    shape() {shapes.push_back(this);} //Фигура присоединяется к списку
+    virtual point north() const = 0; //Точки для привязки
+    virtual point south() const = 0;
+    virtual point east() const = 0;
+    virtual point west() const = 0;
+    virtual point neast() const = 0;
+    virtual point seast() const = 0;
+    virtual point nwest() const = 0;
+    virtual point swest() const = 0;
+    virtual void draw() = 0; //Рисование
+    virtual void move(int, int) = 0; //Перемещение
+    virtual void resize(int) = 0; //Изменение размера
+    private:
+        shape(const shape&);
+        shape(const shape&&);
+};
 
-shape* shape::list = nullptr; //Иницализация списка фигур
+list <shape> shape::shapes; // Размещение списка фигур
+void shape_refresh() // Перерисовка всех фигур на экране
+{
+    screen_clear();
+    for (auto p : shape::shapes)
+        p->draw(); //Динамическое связывание!!!
+    screen_refresh();
+}
+
 
 class rotatable : public virtual shape { //Фигуры, пригодные к повороту
     public:
@@ -110,6 +111,7 @@ class reflectable : public virtual shape {//Фигуры пригодные к �
         virtual void flip_vertically() = 0;
 };
 
+// Линия
 class line : public shape {
 	/*
 	Отрезок прямой ["w", "e"]
@@ -118,9 +120,12 @@ class line : public shape {
 	*/
     line(const line&);
 	line(const line&&);
+
     protected:
-	       point w, e;
+        point w, e;
     public:
+        line(point a, point b) :w(a), e(b) {}
+    	line(point a, int l) :w(a), e(point(a.x + l - 1, a.y)) {}
 
     	point north() const { return point((w.x + e.x) / 2, e.y < w.y ? w.y : e.y); }
     	point south() const { return point((w.x + e.x) / 2, e.y < w.y ? e.y : w.y); }
@@ -131,19 +136,12 @@ class line : public shape {
     	point nwest() const { return w; }
     	point swest() const { return w; }
     	void move(int a, int b) { w.x += a; w.y += b;e.x += a; e.y += b; }
-
-    	void draw()
-        {
-    		put_line(w, e);
-    	}
-
-    	line(point a, point b) :w(a), e(b) {}
-
-    	line(point a, int l) :w(a), e(point(a.x + l - 1, a.y)) {}
+    	void draw(){put_line(w, e);}
+        void resize(int d){e.x += (e.x - w.x) * (d - 1); e.y += (e.y - w.y) * (d - 1);}
 };
 
-//Прямоугольник
-class rectangle:public rotatble {
+// Прямоугольник
+class rectangle: public rotatable {
 	/*
 	nw-----n-----ne
 	|             |
@@ -155,38 +153,48 @@ class rectangle:public rotatble {
 	*/
 	rectangle(const rectangle&);
 	rectangle(const rectangle&&);
-protected:
-	point sw, ne;
-public:
-	point north() const { return point((sw.x + ne.x) / 2, ne.y); }
-	point south() const { return point((sw.x + ne.x) / 2, sw.y); }
-	point east() const { return point(ne.x, (sw.y + ne.y) / 2); }
-	point west() const { return point(sw.x, (sw.y + ne.y) / 2); }
-	point neast() const { return ne; }
-	point seast() const { return point(ne.x, sw.y); }
-	point nwest() const { return point(sw.x, ne.y); }
-	point swest() const { return sw; }
-	void rotate_right()//Поворот относительно se
-	{
-		int w = ne.x - sw.x, h = ne.y - sw.y;
-		sw.x = ne.x - h * 2;
-		ne.y = sw.y + w / 2;
-	}
-	void rotate_left() //Поворот относительно sw
-	{
-		int w = ne.x - sw.x, h = ne.y - sw.y;
-		ne.x = sw.x + h * 2;
-		ne.y = sw.y + w / 2;
-	}
-	void move(int a, int b)
-	{
-		sw.x += a;
-		sw.y += b;
-		ne.x += a;
-		ne.y += b;
-	}
-	void draw();
-	rectangle(point, point);
+
+    protected:
+        point sw, ne;
+    public:
+    	point north() const { return point((sw.x + ne.x) / 2, ne.y); }
+    	point south() const { return point((sw.x + ne.x) / 2, sw.y); }
+    	point east() const { return point(ne.x, (sw.y + ne.y) / 2); }
+    	point west() const { return point(sw.x, (sw.y + ne.y) / 2); }
+    	point neast() const { return ne; }
+    	point seast() const { return point(ne.x, sw.y); }
+    	point nwest() const { return point(sw.x, ne.y); }
+    	point swest() const { return sw; }
+
+    	void rotate_right()//Поворот относительно se
+    	{
+    		int w = ne.x - sw.x, h = ne.y - sw.y;
+    		sw.x = ne.x - h * 2;
+    		ne.y = sw.y + w / 2;
+    	}
+
+    	void rotate_left() //Поворот относительно sw
+    	{
+    		int w = ne.x - sw.x, h = ne.y - sw.y;
+    		ne.x = sw.x + h * 2;
+    		ne.y = sw.y + w / 2;
+    	}
+
+    	void move(int a, int b)
+    	{
+    		sw.x += a;
+    		sw.y += b;
+    		ne.x += a;
+    		ne.y += b;
+    	}
+
+        void resize(int d)
+        {
+            ne.x += (ne.x - sw.x) * (d - 1);
+            ne.y += (ne.y - sw.y) * (d - 1);
+        }
+    	void draw();
+    	rectangle(point, point);
 };
 
 rectangle::rectangle(point a, point b)
@@ -220,110 +228,20 @@ void rectangle::draw()
 	put_line(sw, nw);
 }
 
-//Треугольник
-class Triangle:public rotatble, public reflectable {
-	/*
-	nw    top   ne
-	      / \
-	     /   \
-	    /     \
-	w  /   c   \  e
-	  /         \
-	 /           \
-	sw-----s-----se
-	*/
-	Triangle(const Triangle&);
-	Triangle(const Triangle&&);
-	point n, sw, se;
-	int pos;
-public:
-	Triangle(point, point, point);
-	point north() const { return n; }
-	point south() const { return point((sw.x + se.x) / 2, sw.y); }
-	point east() const { return point(se.x, (se.y + n.y) / 2); }
-	point west() const { return point(sw.x, (sw.y + n.y) / 2); }
-	point neast() const { return point(se.x, n.y);}
-	point seast() const { return se; }
-	point nwest() const { return point(sw.x, n.y);}
-	point swest() const { return sw; }
 
-	void rotate_right()
-	{
-		pos = (pos + 1) % 4;
-	}
+// Трапеция
 
-	void rotate_left()
-	{
-		if (pos)
-			pos -= 1;
-		else
-			pos = 3;
-	}
+class trapeze : public rotatable, public reflectable
+{
 
-	void flip_horisontally() {
-		if (pos == 0)
-			pos = 2;
-		else
-			if (pos == 2)
-				pos = 0;
-	}
-	void flip_vertically() {
-		if (pos == 1)
-			pos = 3;
-		else
-			if (pos == 3)
-				pos = 1;
-	}
-
-	void move(int a, int b){
-		sw.x += a;
-		sw.y += b;
-		se.x += a;
-		se.y += b;
-		n.x += a;
-		n.y += b;
-	}
-
-	void draw();
 };
 
-Triangle::Triangle(point lft, point rgt, point up)
-{
-	sw = lft;
-	se = rgt;
-	n = up;
-    pos = 0;
-}
 
-void Triangle::draw()
-{
-	point curTop, curBaseOne, curBaseTwo; //Текущее положение
-	switch (pos) {
-	case 0:
-		curBaseOne = sw;
-		curBaseTwo = se;
-		curTop = n;
-		break;
-	case 1:
-		curBaseOne = nwest();
-		curBaseTwo = sw;
-		curTop = east();
-		break;
-	case 2:
-		curBaseOne = nwest();
-		curBaseTwo = neast();
-		curTop = south();
-		break;
-	case 3:
-		curBaseOne = neast();
-		curBaseTwo = se;
-		curTop = west();
-		break;
-	}
-	put_line(curBaseOne, curBaseTwo);
-	put_line(curBaseOne, curTop);
-	put_line(curBaseTwo, curTop);
-}
+// Косой крест
+
+
+
+
 
 void shape_refresh()//Перерисовка всех фигур
 {
