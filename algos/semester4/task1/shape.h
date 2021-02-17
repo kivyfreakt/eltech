@@ -94,7 +94,7 @@ void shape_refresh() // Перерисовка всех фигур на экра
 {
     screen_clear();
     for (auto p : shape::shapes)
-        p->draw(); //Динамическое связывание!!!
+        p->draw();
     screen_refresh();
 }
 
@@ -112,12 +112,13 @@ class reflectable : public virtual shape {//Фигуры пригодные к �
 };
 
 // Линия
-class line : public shape {
-	/*
-	Отрезок прямой ["w", "e"]
-	north() определяет точку "выше центра отрезка и так далеко на север,
-	как самая его северная точка", и т.п.
-	*/
+class line : public shape
+/*
+    Отрезок прямой ["w", "e"]
+    north() определяет точку "выше центра отрезка и так далеко на север,
+    как самая его северная точка", и т.п.
+*/
+{
     line(const line&);
 	line(const line&&);
 
@@ -141,22 +142,26 @@ class line : public shape {
 };
 
 // Прямоугольник
-class rectangle: public rotatable {
-	/*
-	nw-----n-----ne
-	|             |
-	|             |
-	w      c      e
-	|             |
-	|             |
-	sw-----s-----se
-	*/
+class rectangle: public rotatable
+/*
+    nw-----n-----ne
+    |             |
+    |             |
+    w      c      e
+    |             |
+    |             |
+    sw-----s-----se
+*/
+{
+
 	rectangle(const rectangle&);
 	rectangle(const rectangle&&);
 
     protected:
         point sw, ne;
     public:
+        rectangle(point, point);
+
     	point north() const { return point((sw.x + ne.x) / 2, ne.y); }
     	point south() const { return point((sw.x + ne.x) / 2, sw.y); }
     	point east() const { return point(ne.x, (sw.y + ne.y) / 2); }
@@ -166,35 +171,11 @@ class rectangle: public rotatable {
     	point nwest() const { return point(sw.x, ne.y); }
     	point swest() const { return sw; }
 
-    	void rotate_right()//Поворот относительно se
-    	{
-    		int w = ne.x - sw.x, h = ne.y - sw.y;
-    		sw.x = ne.x - h * 2;
-    		ne.y = sw.y + w / 2;
-    	}
-
-    	void rotate_left() //Поворот относительно sw
-    	{
-    		int w = ne.x - sw.x, h = ne.y - sw.y;
-    		ne.x = sw.x + h * 2;
-    		ne.y = sw.y + w / 2;
-    	}
-
-    	void move(int a, int b)
-    	{
-    		sw.x += a;
-    		sw.y += b;
-    		ne.x += a;
-    		ne.y += b;
-    	}
-
-        void resize(int d)
-        {
-            ne.x += (ne.x - sw.x) * (d - 1);
-            ne.y += (ne.y - sw.y) * (d - 1);
-        }
+    	void rotate_right();
+    	void rotate_left();
+    	void move(int, int);
+        void resize();
     	void draw();
-    	rectangle(point, point);
 };
 
 rectangle::rectangle(point a, point b)
@@ -218,6 +199,7 @@ rectangle::rectangle(point a, point b)
 			ne = a;
 		}
 }
+
 void rectangle::draw()
 {
 	point nw(sw.x, ne.y);
@@ -228,29 +210,144 @@ void rectangle::draw()
 	put_line(sw, nw);
 }
 
+void rectangle::resize(int d)
+{
+    ne.x += (ne.x - sw.x) * (d - 1);
+    ne.y += (ne.y - sw.y) * (d - 1);
+}
+
+void rectangle::move(int a, int b)
+{
+    sw.x += a;
+    sw.y += b;
+    ne.x += a;
+    ne.y += b;
+}
+
+void rectangle::rotate_right()//Поворот относительно se
+{
+    int w = ne.x - sw.x, h = ne.y - sw.y;
+    sw.x = ne.x - h * 2;
+    ne.y = sw.y + w / 2;
+}
+
+void rectangle::rotate_left() //Поворот относительно sw
+{
+    int w = ne.x - sw.x, h = ne.y - sw.y;
+    ne.x = sw.x + h * 2;
+    ne.y = sw.y + w / 2;
+}
+
 
 // Трапеция
-
-class trapeze : public rotatable, public reflectable
-{
-
-};
+//
+// class trapezium : public rotatable, public reflectable
+// /*
+//
+// */
+// {
+//     trapezium(const trapezium&);
+//     trapezium(const trapezium&&);
+//
+//     protected:
+//         // информация
+//     public:
+//         // методы
+// };
 
 
 // Косой крест
 
+class cross : public shape
+/*
+    nw     n     ne
+      \        /
+        \     /
+    w      c      e
+        /     \
+      /         \
+    sw     s     se
+*/
+{
+    cross(const cross&);
+    cross(const cross&&);
+
+    protected:
+        point sw, ne;
+    public:
+        cross(point, point);
+
+        point north() const { return point((sw.x + ne.x) / 2, ne.y); }
+    	point south() const { return point((sw.x + ne.x) / 2, sw.y); }
+    	point east() const { return point(ne.x, (sw.y + ne.y) / 2); }
+    	point west() const { return point(sw.x, (sw.y + ne.y) / 2); }
+    	point neast() const { return ne; }
+    	point seast() const { return point(ne.x, sw.y); }
+    	point nwest() const { return point(sw.x, ne.y); }
+    	point swest() const { return sw; }
+
+        void move(int, int);
+        void draw();
+        void resize(int);
+};
+
+cross::cross(point a, point b)
+{
+    if(a.x <= b.x)
+    {
+        if(a.y <= b.y)
+        {
+            sw = a;
+            ne = b;
+        }
+        else
+        {
+            sw = point(a.x, b.y);
+            ne = point(b.x, a.y);
+        }
+    }
+    else
+    {
+        if(a.y <= b.y)
+        {
+            sw = point(b.x, a.y);
+            ne = point (a.x, b.y);
+        }
+        else{
+            sw = b;
+            ne = a;
+        }
+    }
+}
+
+void cross::move(int a, int b)
+{
+    sw.x += a; sw.y += b; ne.x += a; ne.y += b;
+}
+
+void cross::draw()
+{
+    point nw(sw.x, ne.y);
+    point se(ne.x, sw.y);
+    put_line(sw, ne);
+    put_line(nw, se);
+}
+
+void cross::resize(int d)
+{
+    ne.x += (ne.x - sw.x) * (d - 1);
+    ne.y += (ne.y - sw.y) * (d - 1);
+}
 
 
-
-
-void shape_refresh()//Перерисовка всех фигур
+void shape_refresh() //Перерисовка всех фигур
 {
 	screen_clear();
 	for (shape* p = shape::list; p; p = p->next) p->draw();
 	screen_refresh();
 }
 
-void up(shape* p, const shape* q)//Поместить p над q
+void up(shape* p, const shape* q) //Поместить p над q
 {
 	point n = q->north();
 	point s = p->south();
