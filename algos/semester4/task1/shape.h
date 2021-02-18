@@ -174,7 +174,7 @@ class rectangle: public rotatable
     	void rotate_right();
     	void rotate_left();
     	void move(int, int);
-        void resize();
+        void resize(int);
     	void draw();
 };
 
@@ -240,21 +240,87 @@ void rectangle::rotate_left() //Поворот относительно sw
 
 
 // Трапеция
-//
-// class trapezium : public rotatable, public reflectable
-// /*
-//
-// */
-// {
-//     trapezium(const trapezium&);
-//     trapezium(const trapezium&&);
-//
-//     protected:
-//         // информация
-//     public:
-//         // методы
-// };
 
+class trapezium : public rotatable, public reflectable
+/*
+          nw-----n-----ne
+         /              \
+        /                \
+       w                  e
+      /                    \
+     /                      \
+    sw----------s-----------se
+*/
+{
+    trapezium(const trapezium&);
+    trapezium(const trapezium&&);
+
+    protected:
+        point sw, nw, ne, se;
+    public:
+        trapezium(point, int, point, int);
+
+        // point north() const { return point((sw.x + ne.x) / 2, ne.y); }
+        // point south() const { return point((sw.x + ne.x) / 2, sw.y); }
+        // point east() const { return point(ne.x, (sw.y + ne.y) / 2); }
+        // point west() const { return point(sw.x, (sw.y + ne.y) / 2); }
+        // point neast() const { return ne; }
+        // point seast() const { return point(ne.x, sw.y); }
+        // point nwest() const { return point(sw.x, ne.y); }
+        // point swest() const { return sw; }
+
+        void rotate_left();
+        void rotate_right();
+        void flip_horisontally();
+        void flip_vertically();
+        void move(int, int);
+        void resize(int);
+        void draw();
+};
+
+trapezium :: trapezium (point a, int lena, point b, int lenb)
+{
+    // проверки !!
+}
+
+void trapezium :: rotate_left()
+{
+
+}
+
+void trapezium :: rotate_right()
+{
+
+}
+
+void trapezium :: flip_vertically()
+{
+
+}
+
+void trapezium :: flip_horisontally()
+{
+
+}
+
+void trapezium :: move(int a, int b)
+{
+
+}
+
+void trapezium :: resize(int d)
+{
+
+}
+
+void trapezium :: draw()
+{
+
+}
+// class crossed_trapezium : public trapezium, public cross
+// {
+//
+// };
 
 // Косой крест
 
@@ -311,14 +377,20 @@ cross::cross(point a, point b)
         if(a.y <= b.y)
         {
             sw = point(b.x, a.y);
-            ne = point (a.x, b.y);
+            ne = point(a.x, b.y);
         }
-        else{
+        else
+        {
             sw = b;
             ne = a;
         }
     }
 }
+
+
+
+
+
 
 void cross::move(int a, int b)
 {
