@@ -49,7 +49,8 @@ void put_line(int x0, int y0, int x1, int y1)
     int two_b = 2*b;
     int xcrit = -b + two_a;
     int eps = 0;
-    for (;;) { //Формирование прямой линии по точкам
+    for (;;)
+    { //Формирование прямой линии по точкам
         put_point(x0, y0);
         if (x0 == x1 && y0 == y1) break;
         if (eps <= xcrit) x0 += dx, eps += two_b;
@@ -71,7 +72,7 @@ void screen_refresh() // Обновление экрана
 
 struct shape
 {
-    static list<shape> shapes; // Список фигур (один на все фигуры!)
+    static list<shape*> shapes; // Список фигур (один на все фигуры!)
     shape() {shapes.push_back(this);} //Фигура присоединяется к списку
     virtual point north() const = 0; //Точки для привязки
     virtual point south() const = 0;
@@ -89,7 +90,7 @@ struct shape
         shape(const shape&&);
 };
 
-list <shape> shape::shapes; // Размещение списка фигур
+list <shape*> shape::shapes; // Размещение списка фигур
 void shape_refresh() // Перерисовка всех фигур на экране
 {
     screen_clear();
@@ -99,13 +100,13 @@ void shape_refresh() // Перерисовка всех фигур на экра
 }
 
 
-class rotatable : public virtual shape { //Фигуры, пригодные к повороту
+class rotatable : virtual public shape { //Фигуры, пригодные к повороту
     public:
         virtual void rotate_left() = 0;
         virtual void rotate_right() = 0;
 };
 
-class reflectable : public virtual shape {//Фигуры пригодные к зеркальному отражению
+class reflectable : virtual public shape {//Фигуры пригодные к зеркальному отражению
     public:
         virtual void flip_horisontally() = 0;
         virtual void flip_vertically() = 0;
@@ -181,20 +182,24 @@ class rectangle: public rotatable
 rectangle::rectangle(point a, point b)
 {
 	if(a.x<=b.x)
-		if (a.y <= b.y) {
+		if (a.y <= b.y)
+        {
 			sw = a;
 			ne = b;
 		}
-		else {
+		else
+        {
 			sw = point(a.x, b.y);
 			ne = point(b.x, a.y);
 		}
 	else
-		if (a.y <= b.y) {
+		if (a.y <= b.y)
+        {
 			sw = point(b.x, a.y);
 			ne = point(a.x, b.y);
 		}
-		else {
+		else
+        {
 			sw = b;
 			ne = a;
 		}
@@ -256,7 +261,8 @@ class trapezium : public rotatable, public reflectable
     trapezium(const trapezium&&);
 
     protected:
-        point sw, nw, ne, se;
+        point sw, nw;
+        int len_s, len_n;
     public:
         trapezium(point, int, point, int);
 
@@ -317,6 +323,7 @@ void trapezium :: draw()
 {
 
 }
+
 // class crossed_trapezium : public trapezium, public cross
 // {
 //
@@ -386,10 +393,6 @@ cross::cross(point a, point b)
         }
     }
 }
-
-
-
-
 
 
 void cross::move(int a, int b)
