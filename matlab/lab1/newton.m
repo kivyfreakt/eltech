@@ -4,8 +4,9 @@ function polynom = newton(x, y)
 % x - массив узлов
 % y - массив значений интерполируемой функции
 % @return
-% polynom - массив значений полинома в точках
+% polynom - массив коэффициентов полинома
 
+n = length(x);
 polynom = zeros(size(x));
 
 end
