@@ -15,11 +15,28 @@ newton_polynom = newton(x,y);
 X = A:0.1:B;
 
 % построение графиков
-figure('Color','w')
+f = figure('Color','w');
+set(f, 'Position', [200, 100, 1000, 495]) 
 % вывод графика sin(x)
-fplot(@sin,[1 9])
+subplot(1,2,1)
+fplot(@sin,[0 10])
 hold on
 % вывод графиков полиномов
-plot(X,polyval(lagrange_polynom, X),'r', X, polyval(newton_polynom, X), 'g')
+title('Lagrange');
+plot(X,polyval(lagrange_polynom, X),'r')
 % вывод узлов интерполяции
 plot(x,y,'bo')
+
+subplot(1,2,2)
+fplot(@sin,[0 10])
+hold on
+% вывод графиков полиномов
+title('Newton');
+plot(X, polyval(newton_polynom, X), 'g')
+% вывод узлов интерполяции
+plot(x,y,'bo')
+
+% разметка
+grid on
+xlabel('x');
+ylabel('y');
