@@ -85,9 +85,6 @@ struct shape
     virtual void draw() = 0; //Рисование
     virtual void move(int, int) = 0; //Перемещение
     virtual void resize(int) = 0; //Изменение размера
-    private:
-        shape(const shape&);
-        shape(const shape&&);
 };
 
 list <shape*> shape::shapes; // Размещение списка фигур
@@ -261,19 +258,18 @@ class trapezium : public rotatable, public reflectable
     trapezium(const trapezium&&);
 
     protected:
-        point sw, nw;
-        int len_s, len_n;
+        point sw, nw, ne, se;
     public:
         trapezium(point, int, point, int);
 
-        // point north() const { return point((sw.x + ne.x) / 2, ne.y); }
-        // point south() const { return point((sw.x + ne.x) / 2, sw.y); }
-        // point east() const { return point(ne.x, (sw.y + ne.y) / 2); }
-        // point west() const { return point(sw.x, (sw.y + ne.y) / 2); }
-        // point neast() const { return ne; }
-        // point seast() const { return point(ne.x, sw.y); }
-        // point nwest() const { return point(sw.x, ne.y); }
-        // point swest() const { return sw; }
+        point north() const { return point((sw.x + ne.x) / 2, ne.y); }
+        point south() const { return point((sw.x + se.x) / 2, sw.y); }
+        point east() const { return point((ne.x + se.x) / 2, (ne.y + se.y) / 2); }
+        point west() const { return point((nw.x + sw.x) / 2, (nw.y + sw.y) / 2); }
+        point neast() const { return ne; }
+        point seast() const { return se; }
+        point nwest() const { return nw; }
+        point swest() const { return sw; }
 
         void rotate_left();
         void rotate_right();
@@ -286,7 +282,11 @@ class trapezium : public rotatable, public reflectable
 
 trapezium :: trapezium (point a, int lena, point b, int lenb)
 {
-    // проверки !!
+    // проверки
+    sw = a;
+    nw = b;
+    ne.x = nw.x + lenb; ne.y = nw.y;
+    se.x = sw.x + lena; se.x = sw.y;
 }
 
 void trapezium :: rotate_left()
@@ -301,37 +301,43 @@ void trapezium :: rotate_right()
 
 void trapezium :: flip_vertically()
 {
-
+    swap(sw, se);
+    swap(nw, ne);
 }
 
 void trapezium :: flip_horisontally()
 {
-
+    swap(sw, nw);
+    swap(se, ne);
 }
 
 void trapezium :: move(int a, int b)
 {
-
+    sw.x += a;
+    sw.y += b;
+    nw.x += a;
+    nw.y += b;
 }
 
 void trapezium :: resize(int d)
 {
-
+    nw.y += (nw.y - sw.y) * (d - 1);
+    se.x += (se.x - sw.x) * (d - 1);
+    ne.x += (ne.x - nw.x) * (d - 1);
+    ne.y += (ne.y - se.y) * (d - 1);
 }
 
-void trapezium :: draw()
+void rectangle::draw()
 {
-
+	put_line(nw, ne);
+	put_line(ne, se);
+	put_line(se, sw);
+	put_line(sw, nw);
 }
-
-// class crossed_trapezium : public trapezium, public cross
-// {
-//
-// };
 
 // Косой крест
 
-class cross : public shape
+class cross : public rectangle
 /*
     nw     n     ne
       \        /
@@ -344,75 +350,22 @@ class cross : public shape
 {
     cross(const cross&);
     cross(const cross&&);
-
-    protected:
-        point sw, ne;
     public:
-        cross(point, point);
-
-        point north() const { return point((sw.x + ne.x) / 2, ne.y); }
-    	point south() const { return point((sw.x + ne.x) / 2, sw.y); }
-    	point east() const { return point(ne.x, (sw.y + ne.y) / 2); }
-    	point west() const { return point(sw.x, (sw.y + ne.y) / 2); }
-    	point neast() const { return ne; }
-    	point seast() const { return point(ne.x, sw.y); }
-    	point nwest() const { return point(sw.x, ne.y); }
-    	point swest() const { return sw; }
-
-        void move(int, int);
+        cross(point a, point b) : rectangle (a,b) {}
         void draw();
-        void resize(int);
 };
-
-cross::cross(point a, point b)
-{
-    if(a.x <= b.x)
-    {
-        if(a.y <= b.y)
-        {
-            sw = a;
-            ne = b;
-        }
-        else
-        {
-            sw = point(a.x, b.y);
-            ne = point(b.x, a.y);
-        }
-    }
-    else
-    {
-        if(a.y <= b.y)
-        {
-            sw = point(b.x, a.y);
-            ne = point(a.x, b.y);
-        }
-        else
-        {
-            sw = b;
-            ne = a;
-        }
-    }
-}
-
-
-void cross::move(int a, int b)
-{
-    sw.x += a; sw.y += b; ne.x += a; ne.y += b;
-}
 
 void cross::draw()
 {
-    point nw(sw.x, ne.y);
-    point se(ne.x, sw.y);
-    put_line(sw, ne);
-    put_line(nw, se);
+    put_line(north(), south());
+    put_line(west(), east());
 }
 
-void cross::resize(int d)
-{
-    ne.x += (ne.x - sw.x) * (d - 1);
-    ne.y += (ne.y - sw.y) * (d - 1);
-}
+
+// class crossed_trapezium : public trapezium, public cross
+// {
+//
+// };
 
 
 void shape_refresh() //Перерисовка всех фигур
@@ -422,29 +375,29 @@ void shape_refresh() //Перерисовка всех фигур
 	screen_refresh();
 }
 
-void up(shape* p, const shape* q) //Поместить p над q
+void up(shape* p, const shape* q) // Поместить p над q
 {
 	point n = q->north();
 	point s = p->south();
 	p->move(n.x - s.x, n.y - s.y + 1);
 }
 
-void lftUp(shape* p, const shape* q)//Поместить p слева над q
+void left_up(shape* p, const shape* q) // Поместить p слева над q
 {
 	p->move(q->nwest().x - p->swest().x, q->nwest().y - p->swest().y + 1);
 }
 
-void rgtUp(shape* p, const shape* q)//Поместить p справа над q
+void right_up(shape* p, const shape* q) // Поместить p справа над q
 {
 	p->move(q->neast().x - p->seast().x, q->nwest().y - p->swest().y + 1);
 }
 
-void rgtDwn(shape* p, const shape* q)//Поместить p справа под q
+void right_down(shape* p, const shape* q) // Поместить p справа под q
 {
 	p->move(q->east().x - p->west().x, q->swest().y - p->nwest().y);
 }
 
-void lftDwn(shape* p, const shape* q)//Поместить p справа под q
+void left_down(shape* p, const shape* q) // Поместить p справа под q
 {
 	p->move(q->west().x - p->east().x, q->swest().y - p->nwest().y);
 }
