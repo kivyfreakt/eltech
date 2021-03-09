@@ -110,6 +110,7 @@ class reflectable : virtual public shape {//Фигуры пригодные к �
 };
 
 // Линия
+
 class line : public shape
 /*
     Отрезок прямой ["w", "e"]
@@ -140,6 +141,7 @@ class line : public shape
 };
 
 // Прямоугольник
+
 class rectangle: public rotatable
 /*
     nw-----n-----ne
@@ -327,7 +329,7 @@ void trapezium :: resize(int d)
     ne.y += (ne.y - se.y) * (d - 1);
 }
 
-void rectangle::draw()
+void trapezium :: draw()
 {
 	put_line(nw, ne);
 	put_line(ne, se);
@@ -355,18 +357,47 @@ class cross : public rectangle
         void draw();
 };
 
-void cross::draw()
+void cross :: draw()
 {
     put_line(north(), south());
     put_line(west(), east());
 }
 
 
-// class crossed_trapezium : public trapezium, public cross
-// {
-//
-// };
+// Трапеция с косым крестом
 
+class crossed_trapezium : public trapezium, public cross
+{
+    public:
+        crossed_trapezium(point a, int lena, point b, int lenb):
+        trapezium(point a, int lena, point b, int lenb), cross(a, point(b.x + lenb, b.y)) {}
+        // void rotate_left();
+        // void rotate_right();
+        // void flip_horisontally();
+        // void flip_vertically();
+        // ???
+        void move(int, int);
+        void resize(int);
+        void draw();
+};
+
+void crossed_trapezium::move()
+{
+    trapezium::move();
+    cross::move();
+}
+
+void crossed_trapezium::resize(int d)
+{
+    trapezium::resize(d);
+    cross::resize(d);
+}
+
+void crossed_trapezium::draw()
+{
+    trapezium::draw();
+    cross::draw();
+}
 
 void shape_refresh() //Перерисовка всех фигур
 {
