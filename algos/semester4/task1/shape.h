@@ -370,12 +370,8 @@ class crossed_trapezium : public trapezium, public cross
 {
     public:
         crossed_trapezium(point a, int lena, point b, int lenb):
-        trapezium(point a, int lena, point b, int lenb), cross(a, point(b.x + lenb, b.y)) {}
-        // void rotate_left();
-        // void rotate_right();
-        // void flip_horisontally();
-        // void flip_vertically();
-        // ???
+        trapezium(point a, int lena, point b, int lenb), cross(a, point(a.x+lena, b.y)) {}
+
         void move(int, int);
         void resize(int);
         void draw();
@@ -399,38 +395,38 @@ void crossed_trapezium::draw()
     cross::draw();
 }
 
-void shape_refresh() //Перерисовка всех фигур
+void up(shape& p, const shape& q) // Поместить p над q
 {
-	screen_clear();
-	for (shape* p = shape::list; p; p = p->next) p->draw();
-	screen_refresh();
+	point n = q.north();
+	point s = p.south();
+	p.move(n.x - s.x, n.y - s.y + 1);
 }
 
-void up(shape* p, const shape* q) // Поместить p над q
+void down(shape& p, const shape& q) // Поместить p над q
 {
-	point n = q->north();
-	point s = p->south();
-	p->move(n.x - s.x, n.y - s.y + 1);
+	point n = q.sorth();
+	point s = p.nouth();
+	p.move(n.x - s.x, n.y - s.y - 1);
 }
 
-void left_up(shape* p, const shape* q) // Поместить p слева над q
+void left_up(shape& p, const shape& q) // Поместить p слева над q
 {
-	p->move(q->nwest().x - p->swest().x, q->nwest().y - p->swest().y + 1);
+	p.move(q.nwest().x - p.swest().x, q.nwest().y - p.swest().y + 1);
 }
 
-void right_up(shape* p, const shape* q) // Поместить p справа над q
+void right_up(shape& p, const shape& q) // Поместить p справа над q
 {
-	p->move(q->neast().x - p->seast().x, q->nwest().y - p->swest().y + 1);
+	p.move(q.neast().x - p.seast().x, q.nwest().y - p.swest().y + 1);
 }
 
-void right_down(shape* p, const shape* q) // Поместить p справа под q
+void right_down(shape& p, const shape& q) // Поместить p справа под q
 {
-	p->move(q->east().x - p->west().x, q->swest().y - p->nwest().y);
+	p.move(q.east().x - p.west().x, q.swest().y - p.nwest().y);
 }
 
-void left_down(shape* p, const shape* q) // Поместить p справа под q
+void left_down(shape& p, const shape& q) // Поместить p справа под q
 {
-	p->move(q->west().x - p->east().x, q->swest().y - p->nwest().y);
+	p.move(q.west().x - p.east().x, q.swest().y - p.nwest().y);
 }
 
 #endif
