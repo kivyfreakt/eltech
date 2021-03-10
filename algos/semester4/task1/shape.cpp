@@ -57,14 +57,12 @@ trapezium :: trapezium (point a, int lena, point b, int lenb)
 
 void trapezium :: rotate_right()
 {
-    // swap();
-    // swap();
+
 }
 
 void trapezium :: rotate_left()
 {
-    // swap();
-    // swap();
+
 }
 
 void trapezium :: flip_horisontally()
@@ -78,11 +76,7 @@ void trapezium :: flip_horisontally()
 
 void trapezium :: flip_vertically()
 {
-    swap(sw.x, nw.x);
-    swap(sw.y, nw.y);
 
-    swap(se.x, ne.x);
-    swap(sw.y, nw.y);
 }
 
 void trapezium :: move(int a, int b)
@@ -227,12 +221,12 @@ class face: public rectangle
 };
 
 face :: face (point a, point b):
-rectangle(a, b),
-w(neast().x - swest().x + 1),
-h(neast().y - swest().y + 1),
-l_eye(point(swest( ).x + 2, swest( ).y + h * 3 / 4), 2),
-r_eye(point(swest( ).x + w - 4, swest( ).y + h * 3 / 4), 2),
-mouth(point(swest( ).x + 2, swest( ).y + h / 4), w - 4)
+    rectangle(a, b),
+    w(neast().x - swest().x + 1),
+    h(neast().y - swest().y + 1),
+    l_eye(point(swest( ).x + 2, swest( ).y + h * 3 / 4), 2),
+    r_eye(point(swest( ).x + w - 4, swest( ).y + h * 3 / 4), 2),
+    mouth(point(swest( ).x + 2, swest( ).y + h / 4), w - 4)
 {}
 
 
@@ -263,7 +257,6 @@ int main()
     // trapezium cs(point(1, 1), 10, point(4, 4), 5);
     // cs.resize(8);
     // cs.flip_horisontally();
-
 
     shape_refresh();
     // подготовка к сборке

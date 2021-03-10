@@ -97,13 +97,17 @@ void shape_refresh() // Перерисовка всех фигур на экра
 }
 
 
-class rotatable : virtual public shape { //Фигуры, пригодные к повороту
+class rotatable : virtual public shape
+{
+    //Фигуры, пригодные к повороту
     public:
         virtual void rotate_left() = 0;
         virtual void rotate_right() = 0;
 };
 
-class reflectable : virtual public shape {//Фигуры пригодные к зеркальному отражению
+class reflectable : virtual public shape
+{
+    //Фигуры пригодные к зеркальному отражению
     public:
         virtual void flip_horisontally() = 0;
         virtual void flip_vertically() = 0;
