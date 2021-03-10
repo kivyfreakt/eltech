@@ -20,15 +20,17 @@ for i = 1 : DOTS
     omega = omega * (random_x - x(i)); 
 end
 
-% ДОБАВИТЬ ВЫЧИСЛЕНИЕ n ПРОИЗВОДНОЙ !!!
-interpolation_error = abs(omega/factorial(DOTS+1));
+
+
+% ДОБАВИТЬ ВЫЧИСЛЕНИЕ n+1 ПРОИЗВОДНОЙ !!!
+interpolation_error = abs((omega)/factorial(DOTS+1));
 
 % нахождение интерполяционного полинома Лагранжа
 lagrange_polynom = lagrange(x,y);
 newton_polynom = newton(x,y);
 
 % Вычисление реальной погрешности интерполяции в выбранной точке
-real_error = abs(polyval(lagrange_polynom, random_x));
+real_error = abs(interpfunc(random_x) - polyval(lagrange_polynom, random_x));
 
 % Сравнение теоретической погрешности и реальной
 interpolation_error
