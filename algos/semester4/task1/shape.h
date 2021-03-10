@@ -1,10 +1,10 @@
 #ifndef SHAPE_H
 #define SHAPE_H
 
-#include <iostream>
 #include <list>
-#include <string>
-#include "screen.h"
+#include <iostream>
+
+using namespace std;
 
 char screen[YMAX][XMAX];
 enum color { black = '*', white = '.' };
@@ -65,8 +65,8 @@ void screen_refresh() // Обновление экрана
     for (int y = YMAX-1; 0 <= y; --y) // с верхней строки до нижней
     {
         for (auto x : screen[y]) // от левого столбца до правого
-            std::cout << x;
-        std::cout << '\n';
+            cout << x;
+        cout << '\n';
     }
 }
 
@@ -118,9 +118,6 @@ class line : public shape
     как самая его северная точка", и т.п.
 */
 {
-    line(const line&);
-	line(const line&&);
-
     protected:
         point w, e;
     public:
@@ -153,14 +150,10 @@ class rectangle: public rotatable
     sw-----s-----se
 */
 {
-
-	rectangle(const rectangle&);
-	rectangle(const rectangle&&);
-
     protected:
         point sw, ne;
     public:
-        rectangle(point, point);
+        rectangle(point a, point b) : sw(a), ne(b) {}
 
     	point north() const { return point((sw.x + ne.x) / 2, ne.y); }
     	point south() const { return point((sw.x + ne.x) / 2, sw.y); }
@@ -177,32 +170,6 @@ class rectangle: public rotatable
         void resize(int);
     	void draw();
 };
-
-rectangle::rectangle(point a, point b)
-{
-	if(a.x<=b.x)
-		if (a.y <= b.y)
-        {
-			sw = a;
-			ne = b;
-		}
-		else
-        {
-			sw = point(a.x, b.y);
-			ne = point(b.x, a.y);
-		}
-	else
-		if (a.y <= b.y)
-        {
-			sw = point(b.x, a.y);
-			ne = point(a.x, b.y);
-		}
-		else
-        {
-			sw = b;
-			ne = a;
-		}
-}
 
 void rectangle::draw()
 {
@@ -228,205 +195,25 @@ void rectangle::move(int a, int b)
     ne.y += b;
 }
 
-void rectangle::rotate_right()//Поворот относительно se
+void rectangle::rotate_right()
 {
     int w = ne.x - sw.x, h = ne.y - sw.y;
     sw.x = ne.x - h * 2;
     ne.y = sw.y + w / 2;
 }
 
-void rectangle::rotate_left() //Поворот относительно sw
+void rectangle::rotate_left()
 {
     int w = ne.x - sw.x, h = ne.y - sw.y;
     ne.x = sw.x + h * 2;
     ne.y = sw.y + w / 2;
 }
 
-
-// Трапеция
-
-class trapezium : public rotatable, public reflectable
-/*
-          nw-----n-----ne
-         /              \
-        /                \
-       w                  e
-      /                    \
-     /                      \
-    sw----------s-----------se
-*/
-{
-    trapezium(const trapezium&);
-    trapezium(const trapezium&&);
-
-    protected:
-        point sw, nw, ne, se;
-    public:
-        trapezium(point, int, point, int);
-
-        point north() const { return point((sw.x + ne.x) / 2, ne.y); }
-        point south() const { return point((sw.x + se.x) / 2, sw.y); }
-        point east() const { return point((ne.x + se.x) / 2, (ne.y + se.y) / 2); }
-        point west() const { return point((nw.x + sw.x) / 2, (nw.y + sw.y) / 2); }
-        point neast() const { return ne; }
-        point seast() const { return se; }
-        point nwest() const { return nw; }
-        point swest() const { return sw; }
-
-        void rotate_left();
-        void rotate_right();
-        void flip_horisontally();
-        void flip_vertically();
-        void move(int, int);
-        void resize(int);
-        void draw();
-};
-
-trapezium :: trapezium (point a, int lena, point b, int lenb)
-{
-    // проверки
-    sw = a;
-    nw = b;
-    ne.x = nw.x + lenb; ne.y = nw.y;
-    se.x = sw.x + lena; se.x = sw.y;
-}
-
-void trapezium :: rotate_left()
-{
-
-}
-
-void trapezium :: rotate_right()
-{
-
-}
-
-void trapezium :: flip_vertically()
-{
-    swap(sw, se);
-    swap(nw, ne);
-}
-
-void trapezium :: flip_horisontally()
-{
-    swap(sw, nw);
-    swap(se, ne);
-}
-
-void trapezium :: move(int a, int b)
-{
-    sw.x += a;
-    sw.y += b;
-    nw.x += a;
-    nw.y += b;
-}
-
-void trapezium :: resize(int d)
-{
-    nw.y += (nw.y - sw.y) * (d - 1);
-    se.x += (se.x - sw.x) * (d - 1);
-    ne.x += (ne.x - nw.x) * (d - 1);
-    ne.y += (ne.y - se.y) * (d - 1);
-}
-
-void trapezium :: draw()
-{
-	put_line(nw, ne);
-	put_line(ne, se);
-	put_line(se, sw);
-	put_line(sw, nw);
-}
-
-// Косой крест
-
-class cross : public rectangle
-/*
-    nw     n     ne
-      \        /
-        \     /
-    w      c      e
-        /     \
-      /         \
-    sw     s     se
-*/
-{
-    cross(const cross&);
-    cross(const cross&&);
-    public:
-        cross(point a, point b) : rectangle (a,b) {}
-        void draw();
-};
-
-void cross :: draw()
-{
-    put_line(north(), south());
-    put_line(west(), east());
-}
-
-
-// Трапеция с косым крестом
-
-class crossed_trapezium : public trapezium, public cross
-{
-    public:
-        crossed_trapezium(point a, int lena, point b, int lenb):
-        trapezium(point a, int lena, point b, int lenb), cross(a, point(a.x+lena, b.y)) {}
-
-        void move(int, int);
-        void resize(int);
-        void draw();
-};
-
-void crossed_trapezium::move()
-{
-    trapezium::move();
-    cross::move();
-}
-
-void crossed_trapezium::resize(int d)
-{
-    trapezium::resize(d);
-    cross::resize(d);
-}
-
-void crossed_trapezium::draw()
-{
-    trapezium::draw();
-    cross::draw();
-}
-
-void up(shape& p, const shape& q) // Поместить p над q
+void up(shape& p, const shape& q)
 {
 	point n = q.north();
 	point s = p.south();
 	p.move(n.x - s.x, n.y - s.y + 1);
-}
-
-void down(shape& p, const shape& q) // Поместить p над q
-{
-	point n = q.sorth();
-	point s = p.nouth();
-	p.move(n.x - s.x, n.y - s.y - 1);
-}
-
-void left_up(shape& p, const shape& q) // Поместить p слева над q
-{
-	p.move(q.nwest().x - p.swest().x, q.nwest().y - p.swest().y + 1);
-}
-
-void right_up(shape& p, const shape& q) // Поместить p справа над q
-{
-	p.move(q.neast().x - p.seast().x, q.nwest().y - p.swest().y + 1);
-}
-
-void right_down(shape& p, const shape& q) // Поместить p справа под q
-{
-	p.move(q.east().x - p.west().x, q.swest().y - p.nwest().y);
-}
-
-void left_down(shape& p, const shape& q) // Поместить p справа под q
-{
-	p.move(q.west().x - p.east().x, q.swest().y - p.nwest().y);
 }
 
 #endif

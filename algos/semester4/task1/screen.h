@@ -1,10 +1,13 @@
+/*
+    Поддержка работы с экраном
+*/
 const int XMAX = 120;
 const int YMAX = 50;
 
 struct point
 {
     int x, y;
-    point(int a = 0, int b = 0) : x(a), y(b) { }
+    point(int a = 0, int b = 0) : x(a), y(b) {}
 };
 
 void put_point(int a, int b); // Вывод точки (2 варианта)
